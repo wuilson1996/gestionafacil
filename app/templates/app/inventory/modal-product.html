@@ -1,0 +1,172 @@
+<div class="modal fade" id="product" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10 modal-lg">
+      <form action="/create-product" method="post" id="formId">{% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Crear Producto</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6>General</h6>
+          <div class="mt-3 row">
+            <input type="hidden" name="type_product" id="type_product" value="true">
+            <div class="col-12 col-sm-6">
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="tp" id="customRadio1" checked>
+                <label class="custom-control-label" for="customRadio1">Producto</label>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="tp" id="customRadio2">
+                <label class="custom-control-label" for="customRadio2">Servicio</label>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 row">
+            <div class="col-12 col-sm-12">
+              <label>Nombre</label>
+              <input class="form-control form-control-sm" id="name" name="name" type="text" required placeholder="Producto o servicio" />
+            </div>
+          </div>
+          <div class="mt-3 row">
+            <div class="col-12 col-sm-3">
+              <label>Referencia</label>
+              <input class="form-control form-control-sm" id="ref" type="text" name="ref" required placeholder="CAS001" />
+            </div>
+            <div class="col-12 col-sm-4">
+              <label>Cantidad</label>
+              <input class="form-control form-control-sm" id="cant" value="0" min="0" type="number" name="cant" required placeholder="10" />
+            </div>
+            <div class="col-12 col-sm-5">
+              <label>Unidad de medida</label>
+              <select class="form-control form-control-sm" id="um" type="text" name="um" required>
+                {% for um in unit_measure %}
+                    <option value="{{um.pk}}">{{um.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="mt-3 row">
+            <div class="mt-3 col-12 col-sm-12 mt-sm-0">
+              <label>Descripcion</label>
+              <textarea class="form-control form-control-sm" id="description" name="description" required placeholder="" ></textarea>
+            </div>
+          </div>
+          <h6 class="mt-4">Precio</h6>
+          <div class="mt-3 row">
+            <div class="col-12 col-sm-3">
+              <label>Precio Base</label>
+              <input class="form-control form-control-sm" id="price_base" type="number" value="0" min="0" name="price_base" required placeholder="1000" />
+            </div>
+            <div class="col-12 col-sm-5">
+              <label>Impuesto</label>
+              <select class="form-control form-control-sm" id="tax" type="text" name="tax" required>
+                
+              </select>
+            </div>
+            <div class="col-12 col-sm-4">
+              <label>Precio total</label>
+              <input class="form-control form-control-sm" id="price_total" type="number" name="price_total" required placeholder="10000" />
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12 col-sm-4">
+                <a href="#" type="button" class="btn btn-white btn-sm">Ir a Formulario avanzado</a>
+            </div>
+          </div>
+          <input type="hidden" id="code" name="code">
+        </div>
+        <div class="modal-footer" id="buttons">
+          <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-dark btn-sm">Guardar</button>
+        </div>  
+      </div>
+      </form>
+    </div>
+  </div>
+  {% include 'includes/scripts.html' %}
+  <script>
+    const taxs = textToJson('{{tax}}');
+    taxs.map(function (value, index){
+        $("#tax").append(
+            '<option value="'+value.pk+'">'+value.name+' ('+value.tax+'%)</option>'
+        )
+    });
+    $("#price_base").change(function(){
+        getPrice($("#tax").val(), $(this).val());
+    })
+    $("#price_base").keyup(function(){
+        getPrice($("#tax").val(), $(this).val());
+    })
+    $("#tax").change(function(elem){
+        var elem = $(this).val();
+        getPrice(elem, $("#price_base").val());
+    });
+    function getPrice(elem, price){
+        taxs.map(function (value, index){
+            if (elem == parseInt(value.pk)){
+                calculaTax(value.tax, price)
+            }
+        });
+    }
+    function calculaTax(tax, price){
+        var valTax = (parseFloat(price) * parseInt(tax)) / 100
+        document.getElementById("price_total").value = parseFloat(price) + parseFloat(valTax)
+    }
+    function showModal(itemId, name, cant, price, cost, description, type_product, um, tax, save = true){
+        document.getElementById("code").value = itemId;
+        document.getElementById("name").value = name;
+        document.getElementById("cant").value = cant;
+        document.getElementById("ref").value = itemId;
+        document.getElementById("price_total").value = price;
+        document.getElementById("price_base").value = cost;
+        document.getElementById("description").value = description;
+        document.getElementById("um").value = um;
+        document.getElementById("tax").value = tax;
+        
+        document.getElementById("type_product").value = type_product;
+        if (type_product == "True"){
+            $("#customRadio1").prop("checked", true);
+        }else{
+            $("#customRadio2").prop("checked", true);
+        }
+        //$("#formId").attr("action", "/update-product");
+        if (!save){
+            removeButton();
+        }else{
+            removeButton();
+            addButton();
+        }
+    }
+    function clearModal(){
+        document.getElementById("code").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("cant").value = "0";
+        document.getElementById("ref").value = "";
+        document.getElementById("price_total").value = "";
+        document.getElementById("price_base").value = "0";
+        document.getElementById("description").value = "";
+        document.getElementById("um").value = "1";
+        document.getElementById("tax").value = "1";
+        //$("#formId").attr("action", "/create-product");
+        removeButton();
+        addButton();
+    }
+    function addButton(){
+        $("#buttons").append(
+        '<button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Cerrar</button>'+
+        '<button type="submit" class="btn btn-dark btn-sm">Guardar</button>'
+        )
+    }
+    function removeButton(){
+        $("#buttons").text("");
+    }
+    $("#customRadio1").change(function(){
+        document.getElementById("type_product").value = true
+    })
+    $("#customRadio2").change(function(){
+        document.getElementById("type_product").value = false
+    })
+  </script>
