@@ -30,6 +30,15 @@
   <link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
   <script src="https://kit.fontawesome.com/349ee9c857.js" crossorigin="anonymous"></script>
+  
+  <!-- <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css"> -->
+
+  <!-- <script src="{% static 'fontawesomefree/js/fontawesome.js' %}"></script>
+  <script src="{% static 'fontawesomefree/js/solid.js' %}"></script>
+  <script src="{% static 'fontawesomefree/js/brands.js' %}"></script> -->
+
   <link href="{% static 'assets/css/nucleo-svg.css' %}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="../../../static/assets/css/corporate-ui-dashboard.css?v=1.0.0" rel="stylesheet" />
@@ -38,6 +47,19 @@
   <style>
   .fa-chevron-up {
     transition: all 0.3s ease;
+  }
+  .loader-position {
+      display:block;
+      width:70px;
+      height:70px;
+      color:#fff;
+      position: fixed;
+      right:41%;
+      bottom:70%;
+      border-radius:50%;
+      line-height:80px;
+      text-align:center;
+      z-index:999;
   }
   .btn-nav-accordion.collapsed .fa-chevron-up {
     transform: rotate(180deg);
@@ -48,7 +70,7 @@
 <body class="g-sidenav-show   bg-gray-100">
   <!--Navbar izquierdo-->
   {% include "includes/sidenav.html" %}
-  
+  <div class="text-center loader-position" id="loaderShow"></div>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
 
     <!--Navbar superior-->

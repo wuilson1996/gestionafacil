@@ -21,10 +21,11 @@
               </div>
               <div class="my-auto mt-4 ms-auto mt-lg-0">
                 <div class="my-auto ms-auto">
-                  <button class="me-2 mb-0 btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#client">
+                  <a href="{% url 'service-view' %}" onclick="openLoader()" class="me-2 mb-0 btn btn-dark" type="button">
                     <i class="fas fa-plus me-1"></i>
-                    Nueva Servicio
-                  </button>
+                    Nueva servicio
+                  </a>
+                  <input type="hidden" id="pk" value="">
                   <button type="button" class="me-2 mb-0 btn btn-white" data-bs-toggle="modal" data-bs-target="#import">
                     <svg width="14" height="15" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" clip-rule="evenodd" d="M3 17.5C3 16.9477 3.44772 16.5 4 16.5H16C16.5523 16.5 17 16.9477 17 17.5C17 18.0523 16.5523 18.5 16 18.5H4C3.44772 18.5 3 18.0523 3 17.5ZM6.29289 9.79289C6.68342 9.40237 7.31658 9.40237 7.70711 9.79289L9 11.0858V3.5C9 2.94772 9.44771 2.5 10 2.5C10.5523 2.5 11 2.94771 11 3.5V11.0858L12.2929 9.79289C12.6834 9.40237 13.3166 9.40237 13.7071 9.79289C14.0976 10.1834 14.0976 10.8166 13.7071 11.2071L10.7071 14.2071C10.5196 14.3946 10.2652 14.5 10 14.5C9.73478 14.5 9.48043 14.3946 9.29289 14.2071L6.29289 11.2071C5.90237 10.8166 5.90237 10.1834 6.29289 9.79289Z" fill="#111827" />
@@ -34,7 +35,7 @@
                     <div class="modal-dialog mt-lg-10">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="ModalLabel">Crear Servicio</h5>
+                          <h5 class="modal-title" id="ModalLabel">Crear cliente</h5>
                           <i class="fas fa-upload ms-3"></i>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -87,86 +88,62 @@
           </div>
           <div class="px-0 pb-0 card-body">
             <div class="table-responsive">
-              <table class="table table-flush" id="service-list">
+              <table class="table table-flush" id="products-list">
                 <thead class="thead-light">
                   <tr>
-                    <th class="text-xs">Product</th>
-                    <th class="text-xs">Category</th>
-                    <th class="text-xs">Price</th>
-                    <th class="text-xs">SKU</th>
-                    <th class="text-xs">Quantity</th>
-                    <th class="text-xs">Status</th>
+                    <!-- <th class="text-xs">Serie</th> -->
+                    <th class="text-xs">Folio</th>
+                    <th class="text-xs">Cliente</th>
+                    <th class="text-xs">Asignado</th>
+                    <th class="text-xs">Total</th>
+                    <th class="text-xs">Fecha</th>
+                    <th class="text-xs">Estado</th>
                     <th class="text-xs">Action</th>
                   </tr>
                 </thead>
                 <tbody>
+                  {% for invoice in invoices %}
                   <tr>
-                    <td>
-                      <div class="d-flex">
-                        <div class="my-auto form-check">
-                          <input class="form-check-input" type="checkbox" id="customCheck1" checked>
-                        </div>
-                        <img class="avatar avatar-md ms-3" src="../../../static/assets/img/spacejoy-NpF_OYE301E-unsplash.jpg" alt="sofa">
-                        <h6 class="my-auto ms-3">Gray Sofa</h6>
-                      </div>
-                    </td>
-                    <td class="text-sm">Furniture</td>
-                    <td class="text-sm">$89.53</td>
-                    <td class="text-sm">243598234</td>
-                    <td class="text-sm">0</td>
-                    <td>
-                      <span class="badge badge-danger badge-sm">Out of Stock</span>
+                    <!-- <td class="text-sm">{{invoice.prefix}}</td> -->
+                    <td class="text-sm">{{invoice.number}}</td>
+                    <td class="text-sm">{{invoice.name_client}}</td>
+                    <td class="text-sm">{{invoice.assigned}}</td>
+                    <td class="text-sm">{{invoice.total}}</td>
+                    <td class="text-sm">
+                      {{invoice.date}}
                     </td>
                     <td class="text-sm">
-                      <a href="javascript:;" data-bs-toggle="tooltip" data-bs-original-title="Preview product">
+                      {{invoice.state}}
+                    </td>
+                    <td class="text-sm">
+                      <a href="{% url 'service-view' %}?pk={{invoice.pk_invoice}}&edit=false" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Factura">
                         <i class="fas fa-eye text-dark"></i>
                       </a>
-                      <a href="javascript:;" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit product">
+                      <a href="{% url 'service-view' %}?pk={{invoice.pk_invoice}}&edit=true" class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Factura">
                         <i class="fas fa-user-edit text-dark"></i>
                       </a>
-                      <a href="javascript:;" data-bs-toggle="tooltip" data-bs-original-title="Delete product">
-                        <i class="fas fa-trash text-dark"></i>
+                      <a href="javascript:;" onclick="activeAlert('{{invoice.pk_invoice}}')" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Factura">
+                        <i class="fas fa-trash text-dark"></i>{% csrf_token %}
+                      </a>
+                      <a href="javascript:;" onclick="openInvoiceView('{{invoice.pdf}}')" class="ms-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver PDF">
+                        <i class="fa fa-file-pdf-o text-danger" aria-hidden="true"></i> VER PDF
+                      </a>
+                      <a href="javascript:;" onclick="activeAlertEmail('{{invoice.pk_invoice}}')" class="ms-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Enviar email">
+                        <i class="fa fa-envelope text-danger" aria-hidden="true"></i>
                       </a>
                     </td>
                   </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex">
-                        <div class="my-auto form-check">
-                          <input class="form-check-input" type="checkbox" id="customCheck2" checked>
-                        </div>
-                        <img class="avatar avatar-md ms-3" src="../../../static/assets/img/volant-CUFOVnctleY-unsplash.jpg" alt="pillow">
-                        <h6 class="my-auto ms-3">Pillow</h6>
-                      </div>
-                    </td>
-                    <td class="text-sm">Deco</td>
-                    <td class="text-sm">$1,869</td>
-                    <td class="text-sm">877712</td>
-                    <td class="text-sm">0</td>
-                    <td>
-                      <span class="badge badge-danger badge-sm">Out of Stock</span>
-                    </td>
-                    <td class="text-sm">
-                      <a href="javascript:;" data-bs-toggle="tooltip" data-bs-original-title="Preview product">
-                        <i class="fas fa-eye text-dark"></i>
-                      </a>
-                      <a href="javascript:;" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit product">
-                        <i class="fas fa-user-edit text-dark"></i>
-                      </a>
-                      <a href="javascript:;" data-bs-toggle="tooltip" data-bs-original-title="Delete product">
-                        <i class="fas fa-trash text-dark"></i>
-                      </a>
-                    </td>
-                  </tr>
+                  {% endfor %}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>SKU</th>
-                    <th>Quantity</th>
-                    <th>Status</th>
+                    <!-- <th>Serie</th> -->
+                    <th>Folio</th>
+                    <th>Cliente</th>
+                    <th>Asignado</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
                     <th>Action</th>
                   </tr>
                 </tfoot>
@@ -176,10 +153,36 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="viewEmail" data-backdrop="static">
+      <div class="modal-dialog mt-lg-12">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ModalLabelEmail">Enviar email</h5>
+            <i class="fas fa-upload ms-3"></i>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="form-group col-md-12" id="addEmailSend">
+                
+              </div>
+              <div class="form-group col-md-12">
+                <input type="text" class="form-control form-control-sm" placeholder="Agrega un email que no este registrado." id="emailSecondary">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success btn-sm" id="buttonSendEmail">Enviar</button>
+        </div>
+        </div>
+      </div>
+    </div>
     {% include 'includes/scripts.html' %}
     <script>
-        if (document.getElementById('service-list')) {
-          const dataTableSearch = new simpleDatatables.DataTable("#service-list", {
+      var invoiceData = textToJson('{{invoices_text}}');
+      modalEmailClick = new bootstrap.Modal(document.getElementById('viewEmail'));
+        if (document.getElementById('products-list')) {
+          const dataTableSearch = new simpleDatatables.DataTable("#products-list", {
             searchable: true,
             fixedHeight: false,
             perPage: 7
@@ -202,6 +205,119 @@
             });
           });
         };
+        function activeAlert(pk_invoice){
+          showAlert(
+            "Eliminar Servicio", 
+            "!Esta seguro de eliminar esta servicio!", 
+            "{% url 'delete-service' %}?pk_invoice="+pk_invoice
+          )
+        }
+        function activeAlertEmail(pk_invoice){
+        document.getElementById("pk").value = pk_invoice;
+        for (i in invoiceData){
+          if (parseInt(invoiceData[i].pk_invoice) == parseInt(pk_invoice)){
+            //alert(invoiceData[i].emails);
+            $("#addEmailSend").text("");
+            invoiceData[i].emails.map(function(value, index){
+              $("#addEmailSend").append(
+                '<div class="d-flex">'+
+                    '<div class="my-auto form-check">'+
+                        '<input class="form-check-input" type="checkbox" value="" id="'+(value.split("@")[0])+'">'+
+                    '</div>'+
+                    '<h6 class="mb-0 text-sm">'+value+'</h6>'+
+                '</div>'
+              )
+            });
+            modalEmailClick.show();
+            break;
+          }
+        }
+      }
+      $("#buttonSendEmail").click(function(){
+        modalEmailClick.hide();
+        for (i in invoiceData){
+          if (parseInt(invoiceData[i].pk_invoice) == parseInt(document.getElementById("pk").value)){
+            console.log(invoiceData[i]);
+            runAjaxCallsEmail(invoiceData[i]);
+            break;
+          }
+        }
+      });
+      function isEmailCorrect(_email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(_email);
+      }
+      async function runAjaxCallsEmail(_invoiceData){
+        sendEmailActive = false;
+        for (i=0; i<_invoiceData.emails.length; i++){
+          if ($("#"+(_invoiceData.emails[i].split("@")[0])).prop("checked")){
+            await sendEmail(_invoiceData.emails[i]);
+            sendEmailActive = true;
+          }
+        }
+        var emailSecondary = document.getElementById("emailSecondary").value;
+        if(isEmailCorrect(emailSecondary)){
+          console.log(emailSecondary);
+          await sendEmail(emailSecondary);
+          sendEmailActive = true;
+        }else{
+          if (emailSecondary != ""){
+            showToastDanger(
+              "Enviar Email",
+              emailSecondary+" - No es un email correcto."
+            );
+          }
+        }
+        if (sendEmailActive){
+          setTimeout(function(){
+            closeLoader();
+            window.location.href = "{{request.path}}";
+          },500);
+        }else{
+          showToastDanger(
+            "Enviar Email",
+            "No ha seleccionado emails."
+          );
+        }
+      }
+      function sendEmail(emailUser){
+        openLoader();
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            url: '/invoice-send-email',
+            type: 'POST',
+            data:{
+              pk_invoice: document.getElementById("pk").value,
+              email_user: emailUser,
+              option: "service"
+            },
+            headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+            success: function(json) {
+              invoiceResponse = JSON.parse(json);
+              stateInvoice = true;
+              showToastDanger(
+                "Enviar Email",
+                invoiceResponse.message+" a: "+emailUser
+              );
+              closeLoader();
+              resolve(invoiceResponse);
+            },
+            error: function(error) {
+              closeLoader();
+              console.log("Ocurrio un error");
+              stateInvoice = true;
+              reject(error);
+            }
+          });
+        })
+      }
+      function openInvoiceView(url) {
+        window.open(
+            url, // URL de la página de la factura
+            'Servicio', // Nombre de la ventana
+            'width=800,height=600,scrollbars=yes,resizable=yes' // Características de la ventana
+        );
+      }
       </script>
 
 {% endblock content %}

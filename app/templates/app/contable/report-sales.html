@@ -1,0 +1,513 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-12">
+            <div class="row mb-2">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <h5 class="card-title"><i class="fa fa-bar-chart" aria-hidden="true"></i> Ventas generales</h5>
+                    </div>
+                    <div class="col-12 col-sm-6 text-end">
+                        <button class="btn btn-info"><i class="fa fa-bar-chart" aria-hidden="true"></i> Descargar Excel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 mb-xl-0">
+                      <div class="card border shadow-xs mb-4">
+                        <div class="card-body text-start w-100">
+                          <div class="row">
+                            <div class="col-12">
+                                <form action="">
+                                    <div class="w-100">
+                                        <div class="row">
+                                            <div class="col-xl-12 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-xl-6 col-sm-6">
+                                                        <label for="">Almacén</label>
+                                                        <select name="store" id="store" class="form-control" multiple>
+                                                            {% for s in store %}
+                                                                <option value="{{s.pk}}" {% if s.pk in store_pk %}selected{% endif %}>{{s.name}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-6 col-sm-6">
+                                                        <label for="date">Numeración</label>
+                                                        <select name="num" id="num" class="form-control" multiple>
+                                                            {% for c in serie_folio %}
+                                                                <option value="{{c.pk}}" {% if c.pk in num %}selected{% endif %}>{{c.name}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-12 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-xl-3 col-sm-3">
+                                                        <label for="date">Desde</label>
+                                                        <input type="date" class="form-control" id="date_from" name="date_from" value="{{date_from}}">
+                                                    </div>
+                                                    <div class="col-xl-3 col-sm-3">
+                                                        <label for="date">Hasta</label>
+                                                        <input type="date" class="form-control" id="date_to" name="date_to" value="{{date_to}}">
+                                                    </div>
+                                                    <div class="col-xl-4 col-sm-4">
+                                                        <label for="date">Predefinidos</label>
+                                                        <select name="pred" id="pred" class="form-control">
+                                                            <option value="today" {% if request.GET.pred == "today" %}selected{% endif %}>Hoy</option>
+                                                            <option value="yesterday" {% if request.GET.pred == "yesterday" %}selected{% endif %}>Ayer</option>
+                                                            <option value="this_week" {% if request.GET.pred == "this_week" %}selected{% endif %}>Esta Semana</option>
+                                                            <option value="last_week" {% if request.GET.pred == "last_week" %}selected{% endif %}>Semana Anterior</option>
+                                                            <option value="this_month" {% if request.GET.pred == "this_month" %}selected{% endif %}>Este Mes</option>
+                                                            <option value="last_month" {% if request.GET.pred == "last_month" %}selected{% endif %}>Mes Anterior</option>
+                                                            <option value="This_trimester" {% if request.GET.pred == "This_trimester" %}selected{% endif %}>Este Trimestre</option>
+                                                            <option value="previous_trimester" {% if request.GET.pred == "previous_trimester" %}selected{% endif %}>Trimestre Anterior</option>
+                                                            <option value="this_year" {% if request.GET.pred == "this_year" %}selected{% endif %}>Este Año</option>
+                                                            <option value="previous_year" {% if request.GET.pred == "previous_year" %}selected{% endif %}>Año Anterior</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-2 col-sm-2 text-end mt-1">
+                                                        <button class="btn btn-success mt-4">Generar Reporte</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                      <div class="card">
+                        <div class="card-header border-0">
+                          <div class="d-sm-flex align-items-center">
+                            <div>
+                              <p class="text-sm mb-sm-0">Gráfico comparativo entre períodos</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <div class="chart">
+                            <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Subtotal</p>
+                                        <span class="mb-2 font-weight-bold" id="subtotalPrice">${{report.totals.subtotal}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Descuento</p>
+                                        <span class="mb-2 font-weight-bold" id="discountPrice">${{report.totals.discount}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Ventas brutas</p>
+                                        <span class="mb-2 font-weight-bold" id="brutasPrice">${{report.totals.sales}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Notas crédito</p>
+                                        <span class="mb-2 font-weight-bold" id="crediNotePrice">${{report.totals.credit_note}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Antes de impuestos</p>
+                                        <span class="mb-2 font-weight-bold" id="taxPrice">${{report.totals.total_by_tax}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Impuestos</p>
+                                        <span class="mb-2 font-weight-bold" id="tax2Price">${{report.totals.tax}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start w-100">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="w-100">
+                                        <p class="text-sm text-secondary mb-1">Despuest de impuestos</p>
+                                        <span class="mb-2 font-weight-bold" id="tax3Price">${{report.totals.total}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12 col-sm-12 mb-xl-0">
+                  <div class="card border shadow-xs mb-4">
+                    <div class="card-body text-start w-100">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="w-100">
+                            <div class="row">
+                                <div class="col-xl-2 col-sm-2">
+                                    <label for="date">Tipo de documento</label>
+                                    <select name="typeDocument" id="typeDocument" class="form-control form-control-sm" multiple>
+                                        <option value="1">Factura</option>
+                                        <option value="2">Nota de credito</option>
+                                    </select>
+                                </div>
+                                <div class="col-xl-2 col-sm-2">
+                                    <label for="date">Folio</label>
+                                    <input name="folio" id="folio" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-xl-2 col-sm-2">
+                                    <label for="">Estado</label>
+                                    <select name="state" id="state" class="form-control form-control-sm">
+                                        <option value="cobrada">Cobrada</option>
+                                        <option value="por cobrar">Por cobrar</option>
+                                    </select>
+                                </div>
+                                <div class="col-xl-2 col-sm-2">
+                                    <label for="client">Cliente</label>
+                                    <select name="client" id="client" class="form-control form-control-sm">
+                                        {% for c in customer %}
+                                            <option value="{{c.pk_customer}}">{{c.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-xl-2 col-sm-2">
+                                    <label for="date">Creado</label>
+                                    <input type="date" class="form-control form-control-sm" id="created" name="created">
+                                </div>
+                                <div class="col-xl-2 col-sm-2 text-end">
+                                    <button class="btn btn-success mt-4" id="buttonFilter">Filtrar</button>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body">
+                            
+                            <div class="card-body">
+                                <div class="card px-1 py-1 max-height-vh-50">
+                                    <div class="card-body overflow-auto overflow-x-hidden">
+                                        <div class="table">
+                                            <table class="table table-responsive table-flush table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Folio</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Estado</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Cliente</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Creacion</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Subtotal</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Descuento</th>
+                                                        <!-- <th class="text-xs border-top-0 font-weight-semibold">Antes de impuestos</th> -->
+                                                        <!-- <th class="text-xs border-top-0 font-weight-semibold">Antes de impuestos</th> -->
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Impuestos</th>
+                                                        <th class="text-xs border-top-0 font-weight-semibold">Total</th>
+                                                        <!-- <th class="text-xs border-top-0 font-weight-semibold">Despues de impuestos</th> -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tableItem">
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'includes/scripts.html' %}
+<script>
+var reportData = textToJson('{{report_data}}');
+data1 = reportData.chart[0][reportData.year[0]];
+data2 = reportData.chart[1][reportData.year[1]];
+
+var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+gradientStroke1.addColorStop(1, 'rgba(85, 166, 248, 0.1)');
+gradientStroke1.addColorStop(0, 'rgba(21, 137, 255, 0.0001)');
+
+var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
+gradientStroke2.addColorStop(1, 'rgba(22, 93, 255, 0.2)');
+gradientStroke2.addColorStop(0, 'rgba(22, 93, 255, 0.0001)');
+
+new Chart(ctx2, {
+  type: "line",
+  data: {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    datasets: [{
+        label: reportData.year[0],
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 2,
+        pointBackgroundColor: "#55A6F8",
+        borderColor: "#55A6F8",
+        borderWidth: 3,
+        backgroundColor: gradientStroke1,
+        fill: true,
+        //data: [340, 550, 350, 750, 650, 250, 500, 150, 600, 550, 400, 950],
+        data: [data1.jan, data1.feb, data1.mar, data1.apr, data1.may, data1.jun, data1.jul, data1.aug, data1.sep, data1.oct, data1.nov, data1.dec],
+        maxBarThickness: 6
+      },
+      {
+        label: reportData.year[1],
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 2,
+        pointBackgroundColor: "#774DD3",
+        borderColor: "#774DD3",
+        borderWidth: 3,
+        backgroundColor: gradientStroke2,
+        fill: true,
+        //data: [100, 500, 200, 550, 250, 500, 250, 750, 400, 650, 250, 750],
+        data: [data2.jan, data2.feb, data2.mar, data2.apr, data2.may, data2.jun, data2.jul, data2.aug, data2.sep, data2.oct, data2.nov, data2.dec],
+        maxBarThickness: 6
+      }
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        align: 'end',
+        labels: {
+          boxWidth: 6,
+          boxHeight: 6,
+          padding: 20,
+          pointStyle: 'circle',
+          borderRadius: 50,
+          usePointStyle: true,
+          font: {
+            weight: 600,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#1e293b',
+          bodyColor: '#1e293b',
+          borderColor: '#e9ecef',
+          borderWidth: 1,
+          pointRadius: 2,
+          usePointStyle: true,
+          boxWidth: 8,
+        }
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    scales: {
+      y: {
+        grid: {
+          drawBorder: true,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: false,
+          borderDash: [5, 5]
+        },
+        ticks: {
+          display: true,
+          padding: 10,
+          color: '#9ca2b7'
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: true,
+          borderDash: [5, 5]
+        },
+        ticks: {
+          display: true,
+          color: '#9ca2b7',
+          padding: 10
+        }
+      },
+    },
+  },
+});
+
+
+if (document.getElementById('store')) {
+    var stores = document.getElementById('store');
+    const example = new Choices(stores, {
+        delimiter: ',',
+        editItems: true,
+        maxItemCount: 5,
+        removeItemButton: true,
+        addItems: true
+    });
+}
+if (document.getElementById('num')) {
+    var num = document.getElementById('num');
+    const example = new Choices(num, {
+        delimiter: ',',
+        editItems: true,
+        maxItemCount: 5,
+        removeItemButton: true,
+        addItems: true
+    });
+}
+if (document.getElementById('typeDocument')) {
+    var typeDocument = document.getElementById('typeDocument');
+    const example = new Choices(typeDocument, {
+        delimiter: ',',
+        editItems: true,
+        maxItemCount: 5,
+        removeItemButton: true,
+        addItems: true
+    });
+}
+$("#buttonFilter").click(function(){
+    folio = document.getElementById("folio").value;
+    state = document.getElementById("state").value;
+    client = document.getElementById("client").value;
+    created = document.getElementById("created").value;
+    typeDocumentValue = [];
+    for(i=0; i<typeDocument.options.length; i++){
+        typeDocumentValue.push(typeDocument.options[i].value.toString());
+    }
+    console.log(typeDocumentValue);
+    filterItems(folio, state, client, created, typeDocumentValue);
+});
+filterItems = (folio="", state="", client="", created="", typeDocumentValue=[]) => {
+    $("#tableItem").text("");
+    reportData.data.map(function(itemValue, index){
+        if (
+            (folio == "" || folio.toLowerCase().includes((itemValue.prefix+itemValue.number))) && 
+            (client == "" || client == itemValue.pk_client) && 
+            (created == "" || created == itemValue.date) && 
+            (typeDocumentValue.length == 0 || typeDocumentValue.includes(itemValue.type_document.toString()))
+        ){
+            tableItem(itemValue);
+        }
+    });
+}
+function tableItem(itemValue){
+    $("#tableItem").append(
+        '<tr>'+
+            '<td class="text-xs">'+itemValue.prefix+itemValue.number+'</td>'+
+            '<td class="text-xs">'+itemValue.state+'</td>'+
+            '<td class="text-xs">'+itemValue.name_client+'</td>'+
+            '<td class="text-xs">'+itemValue.date+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.subtotal, true)+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.discount, true)+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.tax, true)+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.total, true)+'</td>'+
+        '</tr>'
+    );
+}
+filterItems();
+document.getElementById("state").value = "";
+document.getElementById("client").value = "";
+
+$("#subtotalPrice").text("");
+$("#subtotalPrice").append(formatPrice(parseFloat('{{report.totals.subtotal}}')));
+$("#discountPrice").text("");
+$("#discountPrice").append(formatPrice(parseFloat('{{report.totals.discount}}')));
+$("#brutasPrice").text("");
+$("#brutasPrice").append(formatPrice(parseFloat('{{report.totals.sales}}')));
+$("#crediNotePrice").text("");
+$("#crediNotePrice").append(formatPrice(parseFloat('{{report.totals.credit_note}}')));
+$("#taxPrice").text("");
+$("#taxPrice").append(formatPrice(parseFloat('{{report.totals.total_by_tax}}')));
+$("#tax2Price").text("");
+$("#tax2Price").append(formatPrice(parseFloat('{{report.totals.tax}}')));
+$("#tax3Price").text("");
+$("#tax3Price").append(formatPrice(parseFloat('{{report.totals.total}}')));
+
+</script>
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

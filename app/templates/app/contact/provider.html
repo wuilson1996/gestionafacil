@@ -20,7 +20,7 @@
               </div>
               <div class="my-auto mt-4 ms-auto mt-lg-0">
                 <div class="my-auto ms-auto">
-                  <a class="me-2 mb-0 btn btn-dark" type="button" href="{% url 'provider-view' %}">
+                  <a class="me-2 mb-0 btn btn-dark" type="button" href="{% url 'provider-view' %}" onclick="openLoader()">
                     <i class="fas fa-plus me-1"></i>
                     Nuevo proveedor
                   </a>
@@ -65,13 +65,13 @@
                     <td class="text-sm">{{p.phone}}</td>
                     <td class="text-sm">{{p.email}}</td>
                     <td class="text-sm">
-                      <a href="{% url 'provider-view' %}?pk={{p.pk}}&edit=false" data-bs-toggle="tooltip" data-bs-original-title="Ver proveedor">
+                      <a href="{% url 'provider-view' %}?pk={{p.pk}}&edit=false" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Proveedor">
                         <i class="fas fa-eye text-dark"></i>
                       </a>
-                      <a href="{% url 'provider-view' %}?pk={{p.pk}}&edit=true" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Editar proveedor">
+                      <a href="{% url 'provider-view' %}?pk={{p.pk}}&edit=true" class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Proveedor">
                         <i class="fas fa-user-edit text-dark"></i>
                       </a>
-                      <a href="javascript:;" onclick="activeAlert('{{p.pk}}')" data-bs-toggle="tooltip" data-bs-original-title="Eliminar proveedor">
+                      <a href="javascript:;" onclick="activeAlert('{{p.pk}}')" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Proveedor">
                         <i class="fas fa-trash text-dark"></i>
                       </a>
                     </td>

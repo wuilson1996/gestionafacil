@@ -1,0 +1,185 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Configuracion de plantillas</h5>
+                        </div>
+                        <div class="col-12, col-sm-6 text-end">
+                            <button class="btn btn-sm btn-success" onclick="clearModalUser()" data-bs-toggle="modal" data-bs-target="#storeAdd">Crear almacen</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="p-3 card-header">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 text-lg font-weight-semibold">Lista de almacen</h5>
+                                <p class="text-sm font-weight-normal"></p>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                <div class="ms-2 dropdown">
+                                <button class="mb-0 btn btn-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Activos</button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownChart" style="">
+                                    <li><a class="dropdown-item" href="javascript:;">Activos</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Desactivados</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Todos</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="p-0 card-body">
+                            <div class="card px-1 py-1 max-height-vh-50">
+                                <div class="card-body overflow-auto overflow-x-hidden">
+                                    <div class="table">
+                                        <table class="table table-responsive table-flush">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">ID</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Nombre</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Direccion</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Descripcion</th>
+                                                    
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for s in store.data %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="my-auto form-check">
+                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                            <span class="text-sm font-weight-semibold text-dark">{{s.pk}}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{s.name}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{s.address}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{s.description}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        <a href="javascript:;" onclick="viewModalUser(
+                                                            '{{s.pk}}',
+                                                            '{{s.name}}',
+                                                            '{{s.address}}',
+                                                            '{{s.description}}',
+                                                            false
+                                                            )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Almacen">
+                                                          <i class="fas fa-eye text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{s.pk}}',
+                                                            '{{s.name}}',
+                                                            '{{s.address}}',
+                                                            '{{s.description}}',
+                                                        )"
+                                                        class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Almacen">
+                                                          <i class="fas fa-user-edit text-dark"></i>
+                                                        </a>
+                                                        <a onclick="activeAlert('{{s.pk}}')" href="javascript:;"  data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Almacen">
+                                                          <i class="fas fa-trash text-dark"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="storeAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar Almacen</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-store" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="name">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="name">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="address">Direccion</label>
+                        <input type="text" class="form-control form-control-sm" name="address" id="address">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="description">Descripcion</label>
+                        <textarea type="text" class="form-control form-control-sm" name="description" id="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk_store" name="pk_store" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% include 'includes/scripts.html' %}
+
+<script>
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('storeAdd'));
+    function viewModalUser(pk_store, name, address, description, edit=true){
+        document.getElementById("pk_store").value = pk_store;
+        document.getElementById("name").value = name;
+        document.getElementById("address").value = address;
+        document.getElementById("description").value = description;
+    
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalCalendarClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk_store").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+    }
+    function activeAlert(pk_store){
+        showAlert(
+            "Eliminar Almacen", 
+            "!Esta seguro de eliminar este Almacen!", 
+            "{% url 'delete-store' %}?pk_store="+pk_store
+        )
+    }
+</script>
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

@@ -1,6 +1,70 @@
 <input type="hidden" class="mb-0 btn btn-dark" id="warning" onclick="soft.showSwal('warning-message-and-cancel')">
 <input type="hidden" class="mb-0 btn btn-dark" id="success" onclick="soft.showSwal('success-message')">
 
+<div class="col-lg-3 col-sm-6 col-12">
+  <input class="mb-0 btn btn-success w-100 toast-btn" type="hidden" data-target="successToast" id="successToastButton">
+</div>
+<div class="mt-2 col-lg-3 col-sm-6 col-12 mt-sm-0">
+  <input class="mb-0 btn btn-info w-100 toast-btn" type="hidden" data-target="infoToast" id="infoToastButton">
+</div>
+<div class="mt-2 col-lg-3 col-sm-6 col-12 mt-lg-0">
+  <input class="mb-0 btn btn-danger w-100 toast-btn" type="hidden" data-target="dangerToast" id="dangerToastButton">
+</div>
+<div class="mt-2 col-lg-3 col-sm-6 col-12 mt-lg-0">
+  <input class="mb-0 btn btn-warning w-100 toast-btn" type="hidden" data-target="warningToast" id="warningToastButton">
+</div>
+
+<div class="position-fixed bottom-1 end-1 z-index-2">
+  <div class="p-2 bg-white toast fade hide" role="alert" aria-live="assertive" id="successToast" aria-atomic="true">
+    <div class="border-0 toast-header">
+      <i class="ni ni-check-bold text-success me-2"></i>
+      <span class="me-auto font-weight-bold" id="successToastTitle">Corporate UI Dashboard</span>
+      <small class="text-body" id="successToastDate">11 mins ago</small>
+      <i class="cursor-pointer fas fa-times text-md ms-3" data-bs-dismiss="toast" aria-label="Close"></i>
+    </div>
+    <hr class="m-0 horizontal dark">
+    <div class="toast-body" id="successToastDescription">
+      Hello, world! This is a notification message.
+    </div>
+  </div>
+  <div class="p-2 mt-2 toast fade hide bg-gradient-info" role="alert" aria-live="assertive" id="infoToast" aria-atomic="true">
+    <div class="bg-transparent border-0 toast-header">
+      <i class="text-white ni ni-bell-55 me-2"></i>
+      <span class="text-white me-auto font-weight-bold" id="infoToastTitle">Corporate UI Dashboard</span>
+      <small class="text-white" id="infoToastDate">11 mins ago</small>
+      <i class="text-white cursor-pointer fas fa-times text-md ms-3" data-bs-dismiss="toast" aria-label="Close"></i>
+    </div>
+    <hr class="m-0 horizontal light">
+    <div class="text-white toast-body" id="infoToastDescription">
+      Hello, world! This is a notification message.
+    </div>
+  </div>
+  <div class="p-2 mt-2 bg-white toast fade hide" role="alert" aria-live="assertive" id="dangerToast" aria-atomic="true">
+    <div class="border-0 toast-header">
+      <i class="ni ni-notification-70 text-danger me-2"></i>
+      <span class="me-auto  text-danger font-weight-bold" id="dangerToastTitle">Corporate UI Dashboard</span>
+      <small class="text-body" id="dangerToastDate">11 mins ago</small>
+      <i class="cursor-pointer fas fa-times text-md ms-3" data-bs-dismiss="toast" aria-label="Close"></i>
+    </div>
+    <hr class="m-0 horizontal dark">
+    <div class="toast-body" id="dangerToastDescription">
+      Hello, world! This is a notification message.
+    </div>
+  </div>
+  <div class="p-2 mt-2 bg-white toast fade hide" role="alert" aria-live="assertive" id="warningToast" aria-atomic="true">
+    <div class="border-0 toast-header">
+      <i class="ni ni-spaceship text-warning me-2"></i>
+      <span class="me-auto font-weight-bold" id="warningToastTitle">Corporate UI Dashboard</span>
+      <small class="text-body" id="warningToastDate">11 mins ago</small>
+      <i class="cursor-pointer fas fa-times text-md ms-3" data-bs-dismiss="toast" aria-label="Close"></i>
+    </div>
+    <hr class="m-0 horizontal dark">
+    <div class="toast-body" id="warningToastDescription">
+      Hello, world! This is a notification message.
+    </div>
+  </div>
+</div>
+
 <nav class=" px-0 mx-5 rounded shadow-none z-index-2 navbar navbar-main navbar-expand-lg" navbar-scroll="true" id="navbarBlur">
     <div class="container px-2 py-1 min-w-100">
       <nav aria-label="breadcrumb">

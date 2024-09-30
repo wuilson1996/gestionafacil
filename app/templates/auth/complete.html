@@ -1,5 +1,5 @@
 {% extends 'layouts/base-full-screen.html' %}
-{% block title %} Dashboard {% endblock title %}
+{% block title %} Complete {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
@@ -54,39 +54,15 @@
                         <h5 class="font-weight-bolder">Actividades</h5>
                         <p class="text-sm">Selecciona una actividad</p>
                         <div class="row">
-                          <div class="col-sm-12">
-                            <input type="checkbox" class="btn-check btn-check-icon" id="btncheck1" name="btncheck1">
-                            <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck1">
-                              <i class="fas fa-pencil"> <label for="">Tengo una empresa</label></i>
-                            </label>
-                          </div>
-                          <div class="col-sm-12">
-                            <input type="checkbox" class="btn-check btn-check-icon" id="btncheck2" name="btncheck2">
-                            <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck2">
-                              <i class="fas fa-pencil"> <label for="">Soy independiente</label></i>
-                            </label>
-                          </div>
-                          <div class="col-sm-12">
-                            <input type="checkbox" class="btn-check btn-check-icon" id="btncheck3" name="btncheck3">
-                            <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck3">
-                              <i class="fas fa-pencil"> <label for="">Soy contador</label></i>
-                            </label>
-                          </div>
-                          <div class="col-sm-12">
-                            <input type="checkbox" class="btn-check btn-check-icon" id="btncheck4" name="btncheck4">
-                            <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck4">
-                              <i class="fas fa-pencil"> <label for="">Soy estudiante</label></i>
-                            </label>
-                          </div>
-                          <div class="col-sm-12">
-                            <input type="checkbox" class="btn-check btn-check-icon" id="btncheck5" name="btncheck5">
-                            <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck5">
-                              <i class="fas fa-pencil"> <label for="">Otros</label></i>
-                            </label>
-                          </div>
+                          <input type="hidden" id="activity1" name="activity1" value="{{type_worker.0.pk}}">
+                          {% for tw in type_worker %}
+                            <div class="col-md-12 mt-2">
+                              <input class="btn-check active col-md-12" type="radio" name="actividad" id="actividad{{tw.pk}}" autocomplete="off" role="tab" aria-selected="true" checked>
+                              <label class="px-4 mb-0 btn btn-white col-md-12 text-start" for="actividad{{tw.pk}}" onclick="checkRadio('{{tw.pk}}', 1)"><i class="fas fa-pencil"></i> {{tw.name}}</label>
+                            </div>
+                          {% endfor %}
                         </div>
                       </div>
-                      
                       <div class="mt-2 button-row d-flex">
                         <button class="mb-0 text-white btn bg-dark ms-auto js-btn-next" type="button" title="Next">Next</button>
                       </div>
@@ -99,36 +75,13 @@
                   <p class="text-sm">Elige el sector de tu empresa.</p>
                   <div class="multisteps-form__content">
                     <div class="row">
-                      <div class="col-sm-12">
-                        <input type="checkbox" class="btn-check btn-check-icon" id="btncheck11" name="btncheck11">
-                        <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck11">
-                          <i class="fas fa-pencil"> <label for="">Comercio al detal</label></i>
-                        </label>
-                      </div>
-                      <div class="col-sm-12">
-                        <input type="checkbox" class="btn-check btn-check-icon" id="btncheck12" name="btncheck12">
-                        <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck12">
-                          <i class="fas fa-pencil"> <label for="">Alimentacion / Gastronomia</label></i>
-                        </label>
-                      </div>
-                      <div class="col-sm-12">
-                        <input type="checkbox" class="btn-check btn-check-icon" id="btncheck13" name="btncheck13">
-                        <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck13">
-                          <i class="fas fa-pencil"> <label for="">Tecnologia / Telecomunicaciones</label></i>
-                        </label>
-                      </div>
-                      <div class="col-sm-12">
-                        <input type="checkbox" class="btn-check btn-check-icon" id="btncheck14" name="btncheck14">
-                        <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck14">
-                          <i class="fas fa-pencil"> <label for="">Cuidado personal / Estetica</label></i>
-                        </label>
-                      </div>
-                      <div class="col-sm-12">
-                        <input type="checkbox" class="btn-check btn-check-icon" id="btncheck15" name="btncheck15">
-                        <label class="border-2 btn btn-lg btn-white w-100 text-start" for="btncheck15">
-                          <i class="fas fa-pencil"> <label for="">Otros</label></i>
-                        </label>
-                      </div>
+                      <input type="hidden" id="activity2" name="activity2" value="{{sub_type_worker.0.pk}}">
+                      {% for stw in sub_type_worker %}
+                        <div class="col-md-12 mt-2">
+                          <input class="btn-check active col-md-12" type="radio" name="sector" id="sector{{stw.pk}}" autocomplete="off" role="tab" aria-selected="true" checked>
+                          <label class="px-4 mb-0 btn btn-white col-md-12 text-start" for="sector{{stw.pk}}" onclick="checkRadio('{{stw.pk}}', 2)"><i class="fas fa-pencil"></i> {{stw.name}}</label>
+                        </div>
+                      {% endfor %}
                     </div>
                     <div class="mt-4 button-row d-flex">
                       <button class="mb-0 btn btn-white js-btn-prev" type="button" title="Prev">Prev</button>
@@ -157,6 +110,7 @@
                     </div>
                     <div class="row">
                       <div class="mt-4 button-row d-flex col-12">
+                        <input type="hidden" id="state" name="state" value="on">
                         <button class="mb-0 btn btn-white js-btn-prev" type="button" title="Prev">Prev</button>
                         <button class="mb-0 btn btn-dark ms-auto" type="submit" title="Send">Send</button>
                       </div>
@@ -170,10 +124,13 @@
       </div>
     </div>
   </div>
-
-  {% include 'includes/scripts.html' %}
+<script src="../../../static/assets/js/plugins/multistep-form.js"></script>
+<script>
+  function checkRadio(pk, i){
+    document.getElementById("activity"+i).value = pk;
+  }
+</script>
 {% endblock content %}
-  
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 

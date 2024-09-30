@@ -7,7 +7,304 @@
 
 {% block content %}
 
+<div class="row">
+  <div class="col-xl-12 col-sm-6 mb-xl-0">
+    <div class="card border shadow-xs mb-4">
+      <div class="card-body text-start p-3 w-100">
+        <div class="row">
+          <div class="col-12">
+            <div class="w-100">
+              <p class="text-sm text-secondary mb-1">Accesos directos</p>
+              <h4 class="mb-2 font-weight-bold"></h4>
+              <div class="d-flex align-items-center">
+                <span class="text-sm text-success font-weight-semibold px-2">
+                  <!--<i class="fa fa-chevron-up text-xs me-1"></i>-->
+                </span>
+                <span class="text-sm ms-3"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <select name="access" id="access" class="form-control" multiple>
+            <option value="Factura">Facturas</option>
+            <option value="Remision">Remision</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Cotizacion">Cotizacion</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="row">
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row m-1">
+            <a href="{% url 'invoice-view' %}" class="btn btn-white btn-lg">Crear Factura</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row m-1">
+            <a href="{% url 'remission-view' %}" class="btn btn-white btn-lg">Crear Remision</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row m-1">
+            <a href="{% url 'service-view' %}" class="btn btn-white btn-lg">Crear Servicio</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row m-1">
+            <a href="{% url 'cotization-view' %}" class="btn btn-white btn-lg">Crear Cotizacion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row">
+            <div class="col-12">
+              <div class="w-100">
+                <p class="text-sm text-secondary mb-1">Facturas</p>
+                <h4 class="mb-2 font-weight-bold">{{invoice_len}}</h4>
+                <!-- <div class="d-flex align-items-center">
+                  <span class="text-sm text-success font-weight-semibold px-2">
+                    <i class="fa fa-chevron-up text-xs me-1"></i>10.5%
+                  </span>
+                  <span class="text-sm ms-3">from $89,740.00</span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row">
+            <div class="col-12">
+              <div class="w-100">
+                <p class="text-sm text-secondary mb-1">Remisiones</p>
+                <h4 class="mb-2 font-weight-bold">{{remission_len}}</h4>
+                <!-- <div class="d-flex align-items-center">
+                  <span class="text-sm text-success font-weight-semibold px-2">
+                    <i class="fa fa-chevron-up text-xs me-1"></i>55%
+                  </span>
+                  <span class="text-sm ms-3">from 243</span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-xl-0">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row">
+            <div class="col-12">
+              <div class="w-100">
+                <p class="text-sm text-secondary mb-1">Servicios</p>
+                <h4 class="mb-2 font-weight-bold">{{service_len}}</h4>
+                <!-- <div class="d-flex align-items-center">
+                  <span class="text-sm text-success font-weight-semibold px-2">
+                    <i class="fa fa-chevron-up text-xs me-1"></i>22%
+                  </span>
+                  <span class="text-sm ms-3">from $369.30</span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card border shadow-xs mb-4">
+        <div class="card-body text-start p-3 w-100">
+          <div class="row">
+            <div class="col-12">
+              <div class="w-100">
+                <p class="text-sm text-secondary mb-1">Cotizaciones</p>
+                <h4 class="mb-2 font-weight-bold">{{cotization_len}}</h4>
+                <!-- <div class="d-flex align-items-center">
+                  <span class="text-sm text-success font-weight-semibold px-2">
+                    <i class="fa fa-chevron-up text-xs me-1"></i>18%
+                  </span>
+                  <span class="text-sm ms-3">from $19,800.40</span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="row">
+  <div class="col-lg-12 mb-4">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="d-sm-flex align-items-center">
+          <div>
+            <h6>Total de ventas</h6>
+            <p class="text-sm mb-sm-0">La gráfica muestra el valor de tus ventas con impuestos incluidos.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart">
+          <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% include 'includes/scripts.html' %}
+<script>
+
+var reportData = textToJson('{{report_data}}');
+data1 = reportData.chart[0][reportData.year[0]];
+data2 = reportData.chart[1][reportData.year[1]];
+
+var ctx2 = document.getElementById("chart-line").getContext("2d");
+var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
+gradientStroke1.addColorStop(1, 'rgba(85, 166, 248, 0.1)');
+gradientStroke1.addColorStop(0, 'rgba(21, 137, 255, 0.0001)');
+var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
+gradientStroke2.addColorStop(1, 'rgba(22, 93, 255, 0.2)');
+gradientStroke2.addColorStop(0, 'rgba(22, 93, 255, 0.0001)');
+
+new Chart(ctx2, {
+  type: "line",
+  data: {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    datasets: [{
+        label: reportData.year[0],
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 2,
+        pointBackgroundColor: "#55A6F8",
+        borderColor: "#55A6F8",
+        borderWidth: 3,
+        backgroundColor: gradientStroke1,
+        fill: true,
+        data: [data1.jan, data1.feb, data1.mar, data1.apr, data1.may, data1.jun, data1.jul, data1.aug, data1.sep, data1.oct, data1.nov, data1.dec],
+        maxBarThickness: 6
+      },
+      {
+        label: reportData.year[1],
+        tension: 0.4,
+        borderWidth: 0,
+        pointRadius: 2,
+        pointBackgroundColor: "#774DD3",
+        borderColor: "#774DD3",
+        borderWidth: 3,
+        backgroundColor: gradientStroke2,
+        fill: true,
+        data: [data2.jan, data2.feb, data2.mar, data2.apr, data2.may, data2.jun, data2.jul, data2.aug, data2.sep, data2.oct, data2.nov, data2.dec],
+        maxBarThickness: 6
+      }
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        align: 'end',
+        labels: {
+          boxWidth: 6,
+          boxHeight: 6,
+          padding: 20,
+          pointStyle: 'circle',
+          borderRadius: 50,
+          usePointStyle: true,
+          font: {
+            weight: 600,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#1e293b',
+          bodyColor: '#1e293b',
+          borderColor: '#e9ecef',
+          borderWidth: 1,
+          pointRadius: 2,
+          usePointStyle: true,
+          boxWidth: 8,
+        }
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    scales: {
+      y: {
+        grid: {
+          drawBorder: true,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: false,
+          borderDash: [5, 5]
+        },
+        ticks: {
+          display: true,
+          padding: 10,
+          color: '#9ca2b7'
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: true,
+          borderDash: [5, 5]
+        },
+        ticks: {
+          display: true,
+          color: '#9ca2b7',
+          padding: 10
+        }
+      },
+    },
+  },
+});
+if (document.getElementById('access')) {
+    var access = document.getElementById('access');
+    const example = new Choices(access, {
+        delimiter: ',',
+        editItems: true,
+        maxItemCount: 5,
+        removeItemButton: true,
+        addItems: true
+    });
+}
+</script>
+
 {% endblock content %}
   
 <!-- Specific JS goes HERE --> 

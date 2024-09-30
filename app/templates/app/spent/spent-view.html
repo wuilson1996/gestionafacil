@@ -1,0 +1,449 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Nuevo pago {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="container-fluid py-0" style="overflow-y:hidden;">
+    <div class="row">
+      
+      <div class="col-lg-12">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="">
+              <div class="card-body p-0">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold"></p>
+                      <div class="mainBar" id="mainBarAdd">
+                        
+                        <div class="row">
+                          <div class="col-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-3 col-sm-4 text-center">
+                                            <p class="text-sm">Empresa</p>
+                                            <h6>{{company.fields.name}}</h6>
+                                        </div>
+                                        <div class="col-3 col-sm-4 text-center">
+                                            <p class="text-sm">RFC</p>
+                                            <h6>{{company.fields.documentI}}</h6>
+                                        </div>
+                                        <div class="col-3 col-sm-4 text-center">
+                                          <p class="text-sm">Email</p>
+                                          <h6>{{company.fields.email}}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-12 col-md-12"> 
+                            <div class="card  mb-4">
+                              <div class="card-body p-3">
+                                <div class="row">
+                                  <h6>Información general del pago</h6>
+                                  <div class="multisteps-form__content">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                          <div class="row">
+                                            <div class="col-sm-4">
+                                              <label for="">Numero</label>
+                                              <input class="form-control form-control-sm" value="{% if invoice %}{{invoice.number}}{% else %}{{conse.ne}}{% endif %}" disabled type="text" name="number" id="number">
+                                            </div>
+                                            <div class="col-sm-5">
+                                              <label for="">Fecha</label>
+                                              <input class="form-control form-control-sm" value="{% if invoice %}{{invoice.date}}{% else %}{{date}}{% endif %}" type="date" name="dateParam" id="dateParam">
+                                            </div>
+                                            <div class="col-md-9">
+                                              <label>Proveedor</label>
+                                              <select class="form-control form-control-sm" name="pk_customer" id="pk_customer">
+                                                
+                                              </select>
+                                            </div>
+                                            <div class="col-md-9">
+                                              <label for="">Banco</label>
+                                              <select class="form-control form-control-sm" name="bankParam" id="bankParam">
+                                                  {% for b in bank %}
+                                                      <option value="{{b.pk}}" {% if b.pk == invoice.bank %}selected{% endif %}>{{b.name}}</option>
+                                                  {% endfor %}
+                                              </select>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <label for="">Forma de pago</label>
+                                                <select class="form-control form-control-sm" name="payment_form" id="payment_form">
+                                                    {% for pm in  payment_form %}
+                                                        <option value="{{pm.pk}}" {% if pm.pk == invoice.payment_form %}selected{% endif %}>{{pm.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="row">
+                                                <h6>Notas del egreso</h6>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" name="notas" id="notas" placeholder="Notas" rows="3">{{invoice.note}}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            </div>
+                            
+                          </div>
+                
+                        </div>
+  
+                          <div class="col-lg-12 col-md-12 col-12">
+                            <div class="card  mb-4">
+                              <div class="card-body p-3">
+                                <div class="row">
+                                  <h6>Facturas pendientes</h6>
+                                  <div class="col-md-12">
+                                    <div class="">
+                                      <div class="table-responsive">
+                                        <table class="table align-items-center mb-0 table-sm">
+                                          <thead>
+                                            <tr>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Numero</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pagado</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Por pagar</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Retenciones</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Valor retenido</th>
+                                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Valor por pagar</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody id="addItemInvoice">
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-8 mt-2">
+                                        <div class="col-md-6">
+                                            <select class="form-control form-control-sm" name="invoiceProvider" id="invoiceProvider">
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                      <div class="">
+                                        <div class="">
+                                          <table class="table align-items-center mb-0">
+                                            <thead>
+                                              <tr>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"><i class="ni ni-bag-17"></i> Resumen del pedido</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                              <td>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <span class="text-sm" >Sub total: </span>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <span class="text-sm" id="addSubTotal">$ 0</span>
+                                                    </div>        
+                                                    <div class="col-lg-6">
+                                                        <span class="text-sm" >Total Cobrado:  </span>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <span class="text-sm" id="totalCobro">$ 0</span>
+                                                    </div>          
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-12 col-md-12">
+                            <div class="row">
+                              
+                              <div class="col-lg-6 col-md-6">
+                                <div class="card  mb-4">
+                                  <div class="card-body p-3">
+                                    <div class="row">
+                                      <h6></h6>
+                                      <div class="row">
+                                        <div class="form-group">
+                                          <div class="col-md-12 text-center">{% csrf_token %}
+                                            <input type="hidden" id="pk" value="{% if request.GET.pk %}{{request.GET.pk}}{% else %}0{% endif %}">
+                                            {% if request.GET.edit == 'true' or not request.GET.edit %}
+                                              <button type="button" id="buttonSendAdd" onclick="sendInvoice()" class="btn btn-success btn-sm m-2">Guardar</button>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row" id="addContainerPayment">
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+{% include 'includes/scripts.html' %}
+{% include 'app/contact/modal-provider-add.html' %}
+
+<script id="invoiceProvider">
+    var providers = textToJson('{{providers_text}}');
+    //console.log(providers)
+    var invoiceData = textToJson('{{invoice_text}}');
+    var invoiceProviderData = textToJson('{{invoice_provider_text}}');
+    var invoiceProvider = [];
+    var stateInvoice = true;
+    function sendInvoice(){
+      if (stateInvoice){
+        stateInvoice = false;
+        if (invoiceProvider.length > 0){
+            openLoader();
+            $.ajax({
+                url: '/create-spent',
+                type: 'POST',
+                data:{
+                    pk_supplier: document.getElementById("pk_customer").value,
+                    pk: document.getElementById("pk").value,
+                    number: document.getElementById("number").value,
+                    pkInvoiceProvider: document.getElementById("pkInvoiceProvider").value,
+                    totalValue: clearPrice(document.getElementById("totalValue").value),
+                    payment_form: document.getElementById("payment_form").value,
+                    notas: document.getElementById("notas").value,
+                    bank: document.getElementById("bankParam").value,
+                    dateParam: document.getElementById("dateParam").value
+                },
+                headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+                success: function(json) {
+                    invoiceResponse = JSON.parse(json);
+                    if (invoiceResponse.code == 200){
+                      setTimeout(function(){
+                        window.location.href = "{% url 'spent-view' %}?pk="+invoiceResponse.pk;
+                      },500);
+                    }else{
+                      closeLoader();
+                      stateInvoice = true;
+                    }
+                    showToastDanger(
+                      "Crear pago",
+                      invoiceResponse.message
+                    );
+                },
+                error: function(error) {
+                  closeLoader();
+                    console.log("Ocurrio un error");
+                    stateInvoice = true;
+                }
+            });
+        }else{
+            showToastDanger(
+                "Crear pago",
+                "Debe agregar productos a la pago."
+            );
+            stateInvoice = true;
+        }
+      }else{
+        showToastDanger(
+            "Crear pago",
+            "Recuerde dar un solo click al enviar"
+        );
+      }
+    }
+    $("#pk_customer").change(function(){
+      pk_customer = $(this).val();
+      var providerValue;
+      providers.map(function (value, index){
+        if (parseInt(pk_customer) == value.pk){
+          //console.log(value);
+          providerValue = value;
+        }
+      })
+      viewProviderText();
+    });
+    function viewProviderSelect(selectOption){
+      $("#pk_customer").text("");
+      $("#pk_customer").append(
+          '<option value="" selected>Seleccionar</option>'
+        );
+      providers.map(function (value, index){
+        _select = "";
+        if(selectOption == value.documentI){
+          _select = "selected";
+          viewProviderText();
+        }
+        $("#pk_customer").append(
+          '<option value="'+value.pk+'" '+_select+'>'+value.name+'</option>'
+        );
+      })
+    }
+    $("#invoiceProvider").change(function(){
+        $("#addItemInvoice").text("");
+        let invoiceProviderValue = $(this).val();
+        addItemInvoice(invoiceProviderValue);
+    });
+    function addItemInvoice(invoiceProviderValue){
+        invoiceProviderData.map(function (valueInvoiceProvider, indexProduct){
+            if (invoiceProviderValue == valueInvoiceProvider.pk_invoice_provider){
+                $("#addItemInvoice").append(
+                    '<tr class="tr" id="'+valueInvoiceProvider.pk_invoice_provider+'">'+
+                        '<td>'+
+                            '<input type="hidden" class="form-control form-control-sm" value="'+valueInvoiceProvider.pk_invoice_provider+'" name="pkInvoiceProvider" id="pkInvoiceProvider">'+
+                            '<div class="d-flex px-0 py-0">'+
+                                '<div class="align-middle text-start text-sm">'+
+                                    '<h6 class="text-xs font-weight-bold text-wrap">'+valueInvoiceProvider.number+'</h6>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td>'+
+                            '<div class="d-flex px-0 py-0">'+
+                                '<div class="align-middle text-start text-sm">'+
+                                    '<h6 class="text-xs font-weight-bold text-wrap">'+valueInvoiceProvider.total+'</h6>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td>'+
+                            '<div class="d-flex px-0 py-0">'+
+                                '<div class="align-middle text-start text-sm">'+
+                                    '<h6 class="text-xs font-weight-bold text-wrap">'+valueInvoiceProvider.paid+'</h6>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td>'+
+                            '<div class="d-flex px-0 py-0">'+
+                                '<div class="align-middle text-start text-sm">'+
+                                    '<h6 class="text-xs font-weight-bold text-wrap">'+valueInvoiceProvider.to_pay+'</h6>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td>'+
+                            '<div class="d-flex px-0 py-0">'+
+                                '<div class="align-middle text-start text-sm">'+
+                                    '<button class="btn btn-link">Agregar retencion</button>'+
+                                '</div>'+
+                            '</div>'+
+                        '</td>'+
+                        '<td class="align-middle text-center text-sm" id="retention">'+
+                            
+                        '</td>'+
+                        '<td>'+
+                            '<input type="text" class="form-control form-control-sm" value="{% if invoice %}{{invoice.total_paid}}{% else %}0{% endif %}" name="totalValue" id="totalValue">'+
+                        '</td>'+
+                    '</tr>'
+                );
+                activeScriptValue();
+                invoiceProvider = [valueInvoiceProvider.pk_invoice_provider];
+            }
+        });
+    }
+    function activeScriptValue(){
+        $("#totalValue").change(function(){
+            addTotals($(this).val());
+        });
+        $("#totalValue").keyup(function(){
+            addTotals($(this).val());
+        });
+        addTotals(document.getElementById("totalValue").value);
+    }
+    const currency = function(number){
+      return new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP', minimumFractionDigits: 0}).format(number);
+    };
+    function addTotals(totalValue){
+        totalValue = clearPrice(totalValue);
+        $("#addSubTotal").text("");
+        $("#addSubTotal").append(formatPrice(parseFloat(totalValue)));
+        $("#totalCobro").text("");
+        $("#totalCobro").append(formatPrice(parseFloat(totalValue)));
+        document.getElementById("totalValue").value = formatPrice(parseFloat(totalValue));
+    }
+    function viewProviderText(){
+        $("#invoiceProvider").text("");
+        $("#invoiceProvider").append(
+          '<option value="" selected>Seleccionar</option>'
+        );
+        invoiceProviderData.map(function (valueInvoiceProvider, indexProduct){
+            //console.log(valueInvoiceProvider);
+            if(valueInvoiceProvider.pk_supplier.toString() == document.getElementById("pk_customer").value){
+                $("#invoiceProvider").append(
+                    '<option value="'+valueInvoiceProvider.pk_invoice_provider+'">'+valueInvoiceProvider.number+'</option>'
+                );
+            }
+        });
+    //   $("#clientName").text("");
+    //   $("#clientName").append(providerValue.name);
+    //   $("#identification").text("");
+    //   $("#identification").append("Identificacion: "+providerValue.documentI);
+    //   $("#phone").text("");
+    //   $("#phone").append("Celular: "+providerValue.phone);
+    //   $("#address").text("");
+    //   $("#address").append("Direccion: "+providerValue.address.toString());
+    //   $("#email").text("");
+    //   $("#email").append("Email: "+providerValue.email);
+    //   $("#regimen").text("");
+    //   $("#regimen").append("Regimen: "+providerValue.name_type_regime);
+    //   //console.log(invoiceData);
+    //   if (Object.keys(invoiceData).length == 0){
+    //     document.getElementById("payment_method").value = providerValue.commercial_information.payment_method;
+    //     document.getElementById("payment_form").value = providerValue.commercial_information.payment_form;
+    //   }else{
+    //     document.getElementById("payment_method").value = invoiceData.payment_form.payment_method;
+    //     document.getElementById("payment_form").value = invoiceData.payment_form.payment_form;
+    //   }
+    }
+    
+    if (Object.keys(invoiceData).length == 0){
+      viewProviderSelect(0);
+      //viewProviderText(providers[0]);
+      //addOrderBuy();
+    }else{
+      viewProviderSelect(invoiceData.documentI);
+      console.log(invoiceData);
+      document.getElementById("pk_customer").value = invoiceData.pk_supplier;
+      viewProviderText();
+      document.getElementById("invoiceProvider").value = invoiceData.pk_invoice_provider;
+      addItemInvoice(invoiceData.pk_invoice_provider);
+      //console.log(invoiceData.details);
+    //   invoiceData.details.map(function (valueProductInInvoice, indexProductInInvoice){
+    //     searchProductWithMap(valueProductInInvoice.pk.toString(), itemId=valueProductInInvoice.pk_item, cant=valueProductInInvoice.quantity, cost=valueProductInInvoice.cost);
+    //   });
+    //   addProductItem();
+    //   invoiceData.order_buy.map(function (valueItemOrderBuy, indexItemOrderBuy){
+    //     arrayOrderBuyItems[contOrderBuy] = valueItemOrderBuy.toString();
+    //     addOrderBuy(valueItemOrderBuy);
+    //   })
+    }
+</script>
+
+{% endblock content %}  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+{% endblock javascripts %}

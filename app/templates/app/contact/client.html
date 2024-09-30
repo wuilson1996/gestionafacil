@@ -20,7 +20,7 @@
               </div>
               <div class="my-auto mt-4 ms-auto mt-lg-0">
                 <div class="my-auto ms-auto">
-                  <a class="me-2 mb-0 btn btn-dark" type="button" href="{% url 'client-view' %}">
+                  <a class="me-2 mb-0 btn btn-dark" type="button" href="{% url 'client-view' %}" onclick="openLoader()" >
                     <i class="fas fa-plus me-1"></i>
                     Nuevo cliente
                   </a>
@@ -69,13 +69,13 @@
                     <td class="text-sm">{{c.address}}</td>
                     <td class="text-sm">{{c.name_type_regime}}</td>
                     <td class="text-sm">
-                      <a href="{% url 'client-view' %}?pk={{c.pk_customer}}&edit=false"  data-bs-toggle="tooltip" data-bs-original-title="Ver cliente">
+                      <a href="{% url 'client-view' %}?pk={{c.pk_customer}}&edit=false"  data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Cliente">
                         <i class="fas fa-eye text-dark"></i>
                       </a>
-                      <a href="{% url 'client-view' %}?pk={{c.pk_customer}}&edit=true" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Editar cliente">
+                      <a href="{% url 'client-view' %}?pk={{c.pk_customer}}&edit=true" class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Cliente">
                         <i class="fas fa-user-edit text-dark"></i>
                       </a>
-                      <a href="javascript:;" onclick="activeAlert('{{c.pk_customer}}')" data-bs-toggle="tooltip" data-bs-original-title="Eliminar cliente">
+                      <a href="javascript:;" onclick="activeAlert('{{c.pk_customer}}')" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Cliente">
                         <i class="fas fa-trash text-dark"></i>
                       </a>
                     </td>

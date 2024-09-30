@@ -1,0 +1,217 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="row">
+                <div class="col-xl-6 col-sm-6 mb-xl-0">
+                    <div class="card border shadow-xs mb-4">
+                      <div class="card-body text-start p-3 w-100">
+                        <div class="row m-1">
+                          <div class="form-group col-md-12">
+                            <label for="bank">Cuenta bancaria</label>
+                            <select name="bank" id="bank" class="form-control form-control-sm">
+                                <option value=""></option>
+                            </select>
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="from">Desde</label>
+                            <input type="date" class="form-control form-control-sm" name="from" id="from">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="to">Hasta</label>
+                            <input type="date" class="form-control form-control-sm" name="to" id="to">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-sm-6 mb-xl-0">
+                    <div class="card border shadow-xs mb-4">
+                        <div class="card-body text-start p-3 w-100">
+                            <div class="row m-1">
+                                <div class="form-group col-md-6">
+                                    <p>Saldo en extracto bancario</p>
+                                    <span>Al 12/06/2024</span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="text" class="form-control" name="amount" id="amount" placeholder="$0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-10">
+            <div class="card border shadow-xs mb-4">
+                <div class="card-body text-start p-3 w-100">
+                    <p>Información adicional <span class="text-xs">Agregar estos valores después de seleccionar todas las transacciones que deseas conciliar</span></p>
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label for="">Gastos bancarios</label>
+                            <input type="text" class="form-control" name="amount" id="amount" placeholder="$0.00">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="">Impuestos bancarios</label>
+                            <input type="text" class="form-control" name="amount" id="amount" placeholder="$0.00">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="">Entradas bancarias</label>
+                            <input type="text" class="form-control" name="amount" id="amount" placeholder="$0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-10">
+            <div class="card border shadow-xs mb-4">
+                <div class="card-body text-start p-3 w-100">
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <p>Saldo última conciliación</p>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <p>Entradas</p>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <p>Salidas</p>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <p>Saldo final</p>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <p>Diferencia con el extracto</p>
+                            <span>$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Conciliaciones bancarias</h5>
+                        </div>
+                        <div class="col-12, col-sm-6 text-end">
+                            <button class="btn btn-sm btn-success" onclick="clearModalUser()" data-bs-toggle="modal" data-bs-target="#branchAdd">Crear conciliacion bancaria</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="p-3 card-header">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 text-lg font-weight-semibold">Lista de conciliaciones bancarias</h5>
+                                <p class="text-sm font-weight-normal"></p>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                <div class="ms-2 dropdown">
+                                <button class="mb-0 btn btn-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Activos</button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownChart" style="">
+                                    <li><a class="dropdown-item" href="javascript:;">Activos</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Desactivados</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Todos</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="p-0 card-body">
+                            <div class="card px-1 py-1 max-height-vh-50">
+                                <div class="card-body overflow-auto overflow-x-hidden">
+                                    <div class="table">
+                                        <table class="table table-responsive table-flush">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Fecha</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Beneficiario</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Detalles</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Valor</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Tipo</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for b in branch.data %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="my-auto form-check">
+                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                            <span class="text-sm font-weight-semibold text-dark">{{b.pk}}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{b.name}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.address}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.phone}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.email}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        <a href="javascript:;" onclick="viewModalUser(
+                                                            '{{b.pk}}',
+                                                            '{{b.name}}',
+                                                            '{{b.address}}',
+                                                            '{{b.email}}',
+                                                            '{{b.phone}}',
+                                                            false
+                                                            )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Almacen">
+                                                          <i class="fas fa-eye text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{b.pk}}',
+                                                            '{{b.name}}',
+                                                            '{{b.address}}',
+                                                            '{{b.email}}',
+                                                            '{{b.phone}}'
+                                                        )"
+                                                        class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Almacen">
+                                                          <i class="fas fa-user-edit text-dark"></i>
+                                                        </a>
+                                                        <a href="{% url 'delete-branch' %}?pk_branch={{b.pk}}"  data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Almacen">
+                                                          <i class="fas fa-trash text-dark"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'includes/scripts.html' %}
+
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

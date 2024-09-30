@@ -1,0 +1,251 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Usuarios</h5>
+                        </div>
+                        <div class="col-12, col-sm-6 text-end">
+                            <button class="btn btn-sm btn-success" onclick="clearModalUser()" data-bs-toggle="modal" data-bs-target="#userAdd">Crear usuario</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="p-3 card-header">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 text-lg font-weight-semibold">Lista de usuarios</h5>
+                                <p class="text-sm font-weight-normal"></p>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                <div class="ms-2 dropdown">
+                                <button class="mb-0 btn btn-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Activos</button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownChart" style="">
+                                    <li><a class="dropdown-item" href="javascript:;">Activos</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Desactivados</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Todos</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="p-0 card-body">
+                            <div class="card px-1 py-1 max-height-vh-50">
+                                <div class="card-body overflow-auto overflow-x-hidden">
+                                    <div class="table">
+                                        <table class="table table-responsive table-flush">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">ID</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Usuario</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Email</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Nombre</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Almacen</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Estado</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for user in users %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="my-auto form-check">
+                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                            <span class="text-sm font-weight-semibold text-dark">{{user.pk}}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{user.fields.username}}
+                                                    </td>
+                                                    <td>
+                                                        {{user.fields.email}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{user.fields.first_name}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{user.fields.branch_name}}
+                                                    </td>
+                                                    <td>
+                                                        {% if user.fields.active %}
+                                                        <span class="badge badge-success">
+                                                            <i class="me-1 fas fa-check" aria-hidden="true"></i>
+                                                            Activo
+                                                        </span>
+                                                        {% else %}
+                                                        <span class="badge badge-danger">
+                                                            <i class="me-1 fas fa-x" aria-hidden="true"></i>
+                                                            No activo
+                                                        </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{user.pk}}', 
+                                                            '{{user.fields.first_name}}', 
+                                                            '{{user.fields.username}}',
+                                                            '{{user.fields.email}}',
+                                                            '{{user.fields.branch}}',
+                                                            '{{user.fields.permission}}',
+                                                            '{{user.fields.active}}',
+                                                            false
+                                                        )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Usuario">
+                                                          <i class="fas fa-eye text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{user.pk}}', 
+                                                            '{{user.fields.first_name}}', 
+                                                            '{{user.fields.username}}',
+                                                            '{{user.fields.email}}',
+                                                            '{{user.fields.branch}}',
+                                                            '{{user.fields.permission}}',
+                                                            '{{user.fields.active}}'
+                                                        )"class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Usuario">
+                                                          <i class="fas fa-user-edit text-dark"></i>
+                                                        </a>
+                                                        <a onclick="activeAlert('{{user.pk}}')" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Usuario">
+                                                          <i class="fas fa-trash text-dark"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="userAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar usuario</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-users" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="name">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="name">
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="username">Usuario</label>
+                        <input type="text" class="form-control form-control-sm" name="username" id="username">
+                    </div>
+                    <div class="form-group col-12 col-sm-7">
+                        <label for="email">Email</label>
+                        <input type="text" class="form-control form-control-sm" name="email" id="email">
+                    </div>
+                    <div class="form-group col-12 col-sm-5">
+                        <label for="password">Password</label>
+                        <input type="text" class="form-control form-control-sm" name="password" id="password">
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="branch">Almacen</label>
+                        <select class="form-control form-control-sm" name="branch" id="branch">
+                            {% for b in branchs %}
+                                <option value="{{b.pk}}">{{b.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="permission">Permiso</label>
+                        <select class="form-control form-control-sm" name="permission" id="permission" multiple>
+                            {% for p in permissions %}
+                                <option value="{{p.pk_permission}}">{{p.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto" type="checkbox" id="state" name="state" checked="">
+                            <label class="form-check-label text-body ms-3 text-truncate w-80 mb-0" for="state">El usuario tendra acceso a su cuenta</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk_employee" name="pk_employee" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% include 'includes/scripts.html' %}
+
+<script>
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('userAdd'));
+    function viewModalUser(pk_employee, name, username, email, branch, permission, state, edit=true){
+        document.getElementById("pk_employee").value = pk_employee;
+        document.getElementById("name").value = name;
+        document.getElementById("username").value = username;
+        document.getElementById("email").value = email;
+        document.getElementById("branch").value = branch;
+        permission = JSON.parse(permission);
+        selectPermission = document.getElementById("permission");
+        for (i=0; i<selectPermission.options.length; i++){
+            selectPermission.options[i].selected = false;
+            if (permission.includes(parseInt(selectPermission.options[i].value))){
+                selectPermission.options[i].selected = true;
+            }
+        }
+        if (state == "True"){
+            $("#state").prop("checked", true);
+        }else{
+            $("#state").prop("checked", false);
+        }
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalCalendarClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk_employee").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+        selectPermission = document.getElementById("permission");
+        for (i=0; i<selectPermission.options.length; i++){
+            selectPermission.options[i].selected = false;
+        }
+    }
+    function activeAlert(pk_user){
+        showAlert(
+            "Eliminar Usuario", 
+            "!Esta seguro de eliminar este usuario!", 
+            "{% url 'delete-users' %}?pk_employee="+pk_user
+        )
+    }
+</script>
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

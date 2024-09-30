@@ -159,27 +159,27 @@
                                     <input type="hidden" value="{{provider.commercial_information.pk}}" id="ci_pk" name="ci_pk">
                                     <div class="col-12 col-sm-6">
                                         <label>Plazo de pagos</label>
-                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.days}}" name="days" required id="days">
-                                        
-                                            <option value="5 Dias" {% if provider.commercial_information.days == '5 Dias' %}selected{% endif %}>5 Dias</option>
-                                        
+                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.term_payment}}" name="term_payment" required id="term_payment">
+                                        {% for p in term_payment %}
+                                            <option value="{{p.pk}}" {% if provider.commercial_information.term_payment == p.pk %}selected{% endif %}>{{p.name}}</option>
+                                        {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <label>Lista de precio</label>
-                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.price_list}}" name="price_list" id="price_list">
-                                        
-                                            <option value="test" {% if provider.commercial_information.price_list == 'test' %}selected{% endif %}>test</option>
-                                        
+                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.list_price}}" name="price_list" id="price_list">
+                                        {% for price in list_price %}
+                                            <option value="{{price.pk}}" {% if provider.commercial_information.list_price == price.pk %}selected{% endif %}>{{price.name}}</option>
+                                        {% endfor %}
                                         </select>
                                     </div>
                                     </div>
                                     <div class="mt-1 row">
                                     <div class="col-12 col-sm-6">
                                         <label>Vendedor</label>
-                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.vendedor}}" name="vendedor" id="vendedor">
-                                            {% for v in vendedor %}
-                                            <option value="{{v.pk}}" {% if provider.commercial_information.vendedor == v.pk %}selected{% endif %}>{{v.name}}</option>
+                                        <select class="form-control form-control-xl" value="{{provider.commercial_information.seller}}" name="seller" id="seller">
+                                            {% for v in seller %}
+                                            <option value="{{v.pk}}" {% if provider.commercial_information.seller == v.pk %}selected{% endif %}>{{v.name}}</option>
                                             {% endfor %}
                                         </select>
                                         </div>
@@ -225,13 +225,13 @@
                 </div>
                 </form>
         </div>
-        <div class="col-6 col-sm-4">
+        <!-- <div class="col-6 col-sm-4">
             <div class="card">
                 <div class="card-body">
 
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
     
     
@@ -339,7 +339,38 @@
                     }
                 }
             }
-
+            $("#postal_code").keyup(function(){
+                $.ajax({
+                    url: '/get-code_postal?code='+document.getElementById("postal_code").value,
+                    type: 'GET',
+                    data:{},
+                    headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+                    success: function(json) {
+                        codeResponse = JSON.parse(json);
+                        console.log(codeResponse);
+                        if (codeResponse.code == 200){
+                            if (codeResponse.data.length > 0){
+                                document.getElementById("colonia").value = codeResponse.data[0].colonia[0].name;
+                                document.getElementById("estate").value = codeResponse.data[0].state_id;
+                                document.getElementById("municipality").value = codeResponse.data[0].municipality_id;
+                                showToastDanger(
+                                    "Codigo Postal",
+                                    codeResponse.data[0].municipality
+                                );
+                            }else{
+                                document.getElementById("colonia").value = "";
+                                document.getElementById("estate").value = 1;
+                                document.getElementById("municipality").value = 1;
+                            }
+                        }else{
+                            
+                        }
+                    },
+                    error: function(error) {
+                        console.log("Ocurrio un error");
+                    }
+                });
+            })
         </script>
 
       {% endblock content %}

@@ -1,0 +1,434 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Nueva Cotizacion {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+{% block content %}
+
+<div class="container-fluid py-0" style="overflow-y:hidden;">
+    <div class="row">
+      
+      <div class="col-lg-12">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-12">
+            <div class="">
+              <div class="card-body p-0">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold"></p>
+                      <div class="mainBar" id="mainBarAdd">
+                        
+                        <div class="row">
+                          <div class="col-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-3 col-sm-4 text-center">
+                                            <p class="text-sm">Empresa</p>
+                                            <h6>{{company.fields.name}}</h6>
+                                        </div>
+                                        <div class="col-3 col-sm-4 text-center">
+                                            <p class="text-sm">RFC</p>
+                                            <h6>{{company.fields.documentI}}</h6>
+                                        </div>
+                                        <div class="col-3 col-sm-4 text-center">
+                                          <p class="text-sm">Email</p>
+                                          <h6>{{company.fields.email}}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12"> 
+                            <div class="card  mb-4">
+                              <div class="card-body p-3">
+                                <div class="row">
+                                  <h6>Información del proveedor</h6>
+                                  <div class="multisteps-form__content">
+                                    <div class="row">
+                                      <label>Proveedor</label>
+                                      <div class="row">
+                                        <div class="form-group col-md-9">
+                                          <select class="form-control form-control-sm" name="pk_customer" id="pk_customer">
+                                            
+                                          </select>
+                                        </div>
+                                        <div class="form-group col-md-3 text-end">
+                                          <button class="btn btn-sm btn-success" onclick="clearModal()" data-bs-toggle="modal" data-bs-target="#clientAdd">Crear proveedor</button>
+                                        </div>
+                                      </div>
+                                    
+                                      <div class="row">
+                                        <div class="mt-0 col-md-9 text-start">
+                                          <h6 id="clientName">
+                                            ........
+                                          </h6>
+                                          <span class="d-block text-secondary text-sm" id="identification">Identificacion: ........</span>
+                                          <span class="d-block text-secondary text-sm" id="phone">Celular: ........</span>
+                                          <span class="d-block text-secondary text-sm" id="address">Direccion: ........</span>
+                                          <span class="d-block text-secondary text-sm" id="email">Email: ........</span>
+                                          <span class="d-block text-secondary text-sm" id="regimen">Regimen: ........</span>
+                                        </div>
+                                        <div class="mt-0 col-md-3 text-end">
+                                          <button class="btn btn-sm btn-info" onclick="viewModal()" data-bs-toggle="modal" data-bs-target="#clientAdd">Modificar proveedor</button>
+                                          {% if invoice %}<button class="btn btn-sm btn-warning" onclick="" data-bs-toggle="modal" data-bs-target="#sendEmail">Enviar email</button>{% endif %}
+                                        </div>
+                                      </div>
+                                    </div>
+    
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            </div>
+                            
+                          </div>
+                         
+                          <div class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12 col-12">
+                                <div class="card  mb-4">
+                                    <div class="card-body p-3">
+                                      <div class="row text-start">
+                                        <h5>Informacion del documento</h5>
+                                        <h6>Orden de compra N. {% if invoice %}{{invoice.prefix}} {{invoice.number}}{% else %}{{conse.oc}}{% endif %}</h6>
+                                        <div class="mt-2">
+                                          <span class="d-block text-secondary text-sm" id="date">Fecha de creacion: {% if invoice %}{{invoice.date}}{% else %}{{date}}{% endif %}</span>
+                                          <span class="d-block text-secondary text-sm" id="state">Estado de envio: <span class="badge badge-danger badge-lg">{% if invoice %}{{invoice.state}}{% else %}Borrador{% endif %}</span></span>
+                                          <div class="col-md-12 mt-4">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="">Metodo de pago</label>
+                                                    <select class="form-control form-control-sm" name="payment_method" id="payment_method">
+                                                        {% for pm in  payment_method %}
+                                                            <option value="{{pm.pk}}" {% if pm.pk == invoice.payment_form.payment_method %}selected{% endif %}>{{pm.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">Forma de pago</label>
+                                                    <select class="form-control form-control-sm" name="payment_form" id="payment_form">
+                                                        {% for pf in  payment_form %}
+                                                            <option value="{{pf.pk}}" {% if pf.pk == invoice.payment_form.payment_form %}selected{% endif %}>{{pf.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <!-- <div class="multisteps-form__content mt-3">
+                                          <div class="row">
+                                            <div class="mt-1 col-md-12 text-start">
+                                              <h6 id="clientName">
+                                                {{company.fields.name}}
+                                              </h6>
+                                              <span class="d-block text-secondary text-sm" id="">Identificacion: {{company.fields.documentI}}</span>
+                                              <span class="d-block text-secondary text-sm" id="">Celular: {{company.fields.phone}}</span>
+                                              <span class="d-block text-secondary text-sm" id="">Direccion: {{company.fields.address}}</span>
+                                              <span class="d-block text-secondary text-sm" id="">Email: {{company.fields.email}}</span>
+                                              <span class="d-block text-secondary text-sm" id="">Regimen: {{company.fields.regimen_data.name}}</span>
+                                            </div>
+                                          </div>
+                                        </div> -->
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                          </div>
+                        
+                        </div>
+  
+                          <div class="col-lg-12 col-md-12 col-12">
+                            <div class="card  mb-4">
+                              <div class="card-body p-3">
+                                <div class="row">
+                                  <h6>Productos</h6>
+                                  <div class="col-md-12">
+                                    <div class="">
+                                      <div class="table-responsive">
+                                        <table class="table align-items-center mb-0 table-sm">
+                                          <thead>
+                                            <tr>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ref</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nombre</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Cantidad</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Precio unitario</th>
+                                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Impuesto</th>
+                                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Precio total</th>
+                                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody id="addItemProduct">
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="col-md-12">
+                                            <button type="button" style="margin:5px" class="btn btn-success btn-sm" onclick="resetCheckButtonsProductList()" data-bs-toggle="modal" data-bs-target="#modal-product">Agregar producto</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                      <div class="">
+                                        <div class="">
+                                          <table class="table align-items-center mb-0">
+                                            <thead>
+                                              <tr>
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"><i class="ni ni-bag-17"></i> Resumen del pedido</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                              <td id="addItemcategory">
+                                              <div class="row">
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" >Sub total: </span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" id="addSubTotal">$ 0</span>
+                                                </div>        
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" >Impuesto:  </span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" id="addImpuesto">$ 0</span>
+                                                </div>          
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm">Gran total: </span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" id="addGranTotal">$ 0</span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" >Pagado: </span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" id="addPagado">$ 0</span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" >Balance:  </span>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                  <span class="text-sm" id="addBalance">$ 0</span>
+                                                </div>   
+                                              </div>
+                                              </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-12 col-md-12">
+                            <div class="row">
+                              <div class="col-lg-6 col-md-6">
+                                <div class="card  mb-4">
+                                  <div class="card-body p-3">
+                                    <div class="row">
+                                      <h6>Descripción</h6>
+                                      <div class="row">
+                                        <div class="form-group">
+                                          <textarea class="form-control" name="notas" id="notas" placeholder="Notas" rows="3">{{invoice.note}}</textarea>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-lg-6 col-md-6">
+                                <div class="card  mb-4">
+                                  <div class="card-body p-3">
+                                    <div class="row">
+                                      <h6></h6>
+                                      <div class="row">
+                                        <div class="form-group">
+                                          <div class="col-md-12 text-center">{% csrf_token %}
+                                            <input type="hidden" id="pk" value="{% if request.GET.pk %}{{request.GET.pk}}{% else %}0{% endif %}">
+                                            {% if request.GET.edit == 'true' or not request.GET.edit %}
+                                              <button type="button" id="buttonSendAdd" onclick="sendInvoice()" class="btn btn-success btn-sm m-2">Enviar y Guardar</button>
+                                              {% if invoice %}
+                                                <button type="button" id="buttonSendAdd" onclick="" class="btn btn-info btn-sm m-2">Crear Factura</button>
+                                                <button type="button" id="buttonSendAdd" onclick="" class="btn btn-warning btn-sm m-2">Crear Remision</button>
+                                              {% endif %}
+                                            {% endif %}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row" id="addContainerPayment">
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+{% include 'app/document/modal-product-list.html' %}
+{% include 'app/contact/modal-provider-add.html' %}
+
+<script>
+    var providers = textToJson('{{providers_text}}');
+    //console.log(providers)
+    var invoiceData = textToJson('{{invoice_text}}');
+    var stateInvoice = true;
+    function sendInvoice(){
+      if (stateInvoice){
+        stateInvoice = false;
+        if (productItem.length > 0){
+            openLoader();
+            $.ajax({
+                url: '/create-order_buy',
+                type: 'POST',
+                data:{
+                    client: document.getElementById("pk_customer").value,
+                    pk: document.getElementById("pk").value,
+                    products: JSON.stringify(productItem),
+                    totalValue: totalValue,
+                    payment_form: document.getElementById("payment_form").value,
+                    payment_method: document.getElementById("payment_method").value,
+                    notas: document.getElementById("notas").value,
+                },
+                headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+                success: function(json) {
+                    invoiceResponse = JSON.parse(json);
+                    if (invoiceResponse.code == 200){
+                      setTimeout(function(){
+                        window.location.href = "{% url 'order_buy-view' %}?pk="+invoiceResponse.pk_order;
+                      },500);
+                    }else{
+                      closeLoader();
+                      stateInvoice = true;
+                    }
+                    showToastDanger(
+                      "Crear orden de compra",
+                      invoiceResponse.message
+                    );
+                },
+                error: function(error) {
+                  closeLoader();
+                    console.log("Ocurrio un error");
+                    stateInvoice = true;
+                }
+            });
+        }else{
+            showToastDanger(
+                "Crear orden de compra",
+                "Debe agregar productos a la orden de compra."
+            );
+            stateInvoice = true;
+        }
+      }else{
+        showToastDanger(
+            "Crear orden de compra",
+            "Recuerde dar un solo click al enviar"
+        );
+      }
+    }
+    $("#pk_customer").change(function(){
+      pk_customer = $(this).val();
+      var providerValue;
+      providers.map(function (value, index){
+        if (parseInt(pk_customer) == value.pk){
+          console.log(value);
+          providerValue = value;
+        }
+      })
+      viewProviderText(providerValue);
+    });
+    function viewProviderSelect(selectOption){
+      $("#pk_customer").text("");
+      providers.map(function (value, index){
+        _select = "";
+        if(selectOption == value.documentI){
+          _select = "selected";
+          viewProviderText(value);
+        }
+        $("#pk_customer").append(
+          '<option value="'+value.pk+'" '+_select+'>'+value.name+'</option>'
+        );
+      })
+    }
+    
+    function viewProviderText(providerValue){
+      $("#clientName").text("");
+      $("#clientName").append(providerValue.name);
+      $("#identification").text("");
+      $("#identification").append("Identificacion: "+providerValue.documentI);
+      $("#phone").text("");
+      $("#phone").append("Celular: "+providerValue.phone);
+      $("#address").text("");
+      $("#address").append("Direccion: "+providerValue.address.toString());
+      $("#email").text("");
+      $("#email").append("Email: "+providerValue.email);
+      $("#regimen").text("");
+      $("#regimen").append("Regimen: "+providerValue.name_type_regime);
+      //console.log(invoiceData);
+      if (Object.keys(invoiceData).length == 0){
+        //document.getElementById("payment_method").value = providerValue.commercial_information.payment_method;
+        //document.getElementById("payment_form").value = providerValue.commercial_information.payment_form;
+      }else{
+        document.getElementById("payment_method").value = invoiceData.payment_form.payment_method;
+        document.getElementById("payment_form").value = invoiceData.payment_form.payment_form;
+      }
+    }
+    $("#payment_method").change(function(){
+      showFormPayment();
+    });
+    function showFormPayment(){
+      elementsOptions = "";
+      $("#payment_form").text("");
+      if (parseInt(document.getElementById("payment_method").value) == 2){
+        '{% for pf in  payment_form %}'
+          '{% if pf.name == "Efectivo" %}'
+            elementsOptions += '<option value="{{pf.pk}}" {% if pf.pk == invoice.payment_form.payment_form %}selected{% endif %}>{{pf.name}}</option>'
+          '{% endif %}'
+        '{% endfor %}'
+        $("#payment_form").append(elementsOptions);
+      }else{
+        '{% for pf in  payment_form %}'
+          '{% if pf.name != "Efectivo" %}'
+            elementsOptions += '<option value="{{pf.pk}}" {% if pf.pk == invoice.payment_form.payment_form %}selected{% endif %}>{{pf.name}}</option>'
+          '{% endif %}'
+        '{% endfor %}'
+        $("#payment_form").append(elementsOptions);
+      }
+    }
+    if (Object.keys(invoiceData).length == 0){
+      viewProviderSelect(0);
+      viewProviderText(providers[0]);
+      showFormPayment();
+    }else{
+      viewProviderSelect(invoiceData.supplier.documentI);
+      //console.log(invoiceData.details);
+      invoiceData.details.map(function (valueProductInInvoice, indexProductInInvoice){
+        searchProductWithMap(valueProductInInvoice.pk.toString(), itemId=valueProductInInvoice.pk_item, cant=valueProductInInvoice.quantity, cost=valueProductInInvoice.cost);
+      });
+      addProductItem();
+    }
+</script>
+
+{% endblock content %}  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+{% endblock javascripts %}

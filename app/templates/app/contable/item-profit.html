@@ -1,0 +1,221 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-12">
+            <div class="row mb-2">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <h5 class="card-title"><i class="fa fa-bar-chart" aria-hidden="true"></i> Rentabilidad por producto</h5>
+                    </div>
+                    <div class="col-12 col-sm-6 text-end">
+                        <button class="btn btn-info"><i class="fa fa-bar-chart" aria-hidden="true"></i> Descargar Excel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 mb-xl-0">
+                      <div class="card border shadow-xs mb-4">
+                        <div class="card-body text-start w-100">
+                          <div class="row">
+                            <div class="col-12">
+                                <form action="">
+                                    <div class="w-100">
+                                        <div class="row">
+                                            <div class="col-xl-3 col-sm-3">
+                                                <label for="date">Desde</label>
+                                                <input type="date" class="form-control form-control-sm" id="date_from" value="{{date_from}}" name="date_from">
+                                            </div>
+                                            <div class="col-xl-3 col-sm-3">
+                                                <label for="date">Hasta</label>
+                                                <input type="date" class="form-control form-control-sm" id="date_to" value="{{date_to}}" name="date_to">
+                                            </div>
+                                            <div class="col-xl-3 col-sm-3">
+                                                <label for="date">Predefinidos</label>
+                                                <select name="pred" id="pred" class="form-control form-control-sm">
+                                                    <option value="today" {% if request.GET.pred == "today" %}selected{% endif %}>Hoy</option>
+                                                    <option value="yesterday" {% if request.GET.pred == "yesterday" %}selected{% endif %}>Ayer</option>
+                                                    <option value="this_week" {% if request.GET.pred == "this_week" %}selected{% endif %}>Esta Semana</option>
+                                                    <option value="last_week" {% if request.GET.pred == "last_week" %}selected{% endif %}>Semana Anterior</option>
+                                                    <option value="this_month" {% if request.GET.pred == "this_month" %}selected{% endif %}>Este Mes</option>
+                                                    <option value="last_month" {% if request.GET.pred == "last_month" %}selected{% endif %}>Mes Anterior</option>
+                                                    <option value="This_trimester" {% if request.GET.pred == "This_trimester" %}selected{% endif %}>Este Trimestre</option>
+                                                    <option value="previous_trimester" {% if request.GET.pred == "previous_trimester" %}selected{% endif %}>Trimestre Anterior</option>
+                                                    <option value="this_year" {% if request.GET.pred == "this_year" %}selected{% endif %}>Este Año</option>
+                                                    <option value="previous_year" {% if request.GET.pred == "previous_year" %}selected{% endif %}>Año Anterior</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-xl-3 col-sm-3 text-end">
+                                                <button class="btn btn-success mt-4" type="submit">Generar Reporte</button>
+                                            </div>
+                                        </div>
+                                      </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card border shadow-xs">
+                            <div class="card-body text-start w-100 text-center">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="w-100">
+                                            <p class="text-sm text-secondary mb-1">Total vendido</p>
+                                            <span class="mb-2 font-weight-bold" id="totalPrice">${{report.totals.total}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card border shadow-xs">
+                            <div class="card-body text-start w-100 text-center">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="w-100">
+                                            <p class="text-sm text-secondary mb-1">Costo total</p>
+                                            <span class="mb-2 font-weight-bold" id="costPrice">${{report.totals.cost}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card border shadow-xs">
+                            <div class="card-body text-start w-100 text-center">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="w-100">
+                                            <p class="text-sm text-secondary mb-1">Rentabilidad total</p>
+                                            <span class="mb-2 font-weight-bold" id="rentablePrice">${{report.totals.rentable}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 mb-xl-0">
+                      <div class="card border shadow-xs mb-4">
+                        <div class="card-body text-start w-100">
+                          <div class="row">
+                            <div class="col-12">
+                              <div class="w-100">
+                                <div class="row">
+                                    <div class="col-xl-3 col-sm-3">
+                                        <label for="product">Producto</label>
+                                        <input name="product" id="product" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-xl-3 col-sm-3">
+                                        <label for="ref">Referencia</label>
+                                        <input name="ref" id="ref" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-xl-6 col-sm-6 text-end">
+                                        <button class="btn btn-success mt-4" id="buttonFilter">Filtrar</button>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 mb-4">
+                        <div class="card border shadow-xs">
+                            <div class="card-body">
+                                
+                                <div class="card-body">
+                                    <div class="card px-1 py-1 max-height-vh-50">
+                                        <div class="card-body overflow-auto overflow-x-hidden">
+                                            <div class="table">
+                                                <table class="table table-responsive table-flush table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Producto</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Referencia</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Cantidad</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Total vendido</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Costo total</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Rentabilidad total</th>
+                                                            <th class="text-xs border-top-0 font-weight-semibold">Porcentaje</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tableItem">
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% include 'includes/scripts.html' %}
+<script>
+var reportData = textToJson('{{report_data}}');
+
+$("#buttonFilter").click(function(){
+    product = document.getElementById("product").value;
+    ref = document.getElementById("ref").value;
+    filterItems(product, ref);
+});
+filterItems = (product="", ref="") => {
+    $("#tableItem").text("");
+    reportData.data.map(function(itemValue, index){
+        if (
+            (product == "" || (itemValue.name.toLowerCase().includes(product.toLowerCase()))) && 
+            (ref == "" || itemValue.code.toLowerCase().includes(ref.toLowerCase()))
+        ){
+            tableItem(itemValue);
+        }
+    });
+}
+function tableItem(itemValue){
+    $("#tableItem").append(
+        '<tr>'+
+            '<td class="text-xs">'+itemValue.name+'</td>'+
+            '<td class="text-xs">'+itemValue.code+'</td>'+
+            '<td class="text-xs">'+itemValue.cant+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.total, true)+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.cost, true)+'</td>'+
+            '<td class="text-xs">'+formatPrice(itemValue.rentable, true)+'</td>'+
+            '<td class="text-xs">'+parseFloat(itemValue.porcent).toFixed(2)+'</td>'+
+        '</tr>'
+    );
+}
+filterItems();
+$("#totalPrice").text("");
+$("#totalPrice").append(formatPrice(parseFloat('{{report.totals.total}}')));
+$("#costPrice").text("");
+$("#costPrice").append(formatPrice(parseFloat('{{report.totals.cost}}')));
+$("#rentablePrice").text("");
+$("#rentablePrice").append(formatPrice(parseFloat('{{report.totals.rentable}}')));
+</script>
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

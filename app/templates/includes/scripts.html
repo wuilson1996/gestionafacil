@@ -10,13 +10,26 @@
 <script src="{% static 'assets/js/plugins/sweetalert.min.js' %}"></script>
 <script src="{% static 'assets/js/plugins/dragula/dragula.min.js' %}"></script>
 <script src="{% static 'assets/js/plugins/jkanban/jkanban.js' %}"></script>
-<script src="{% static 'assets/js/plugins/multistep-form.js' %}"></script>
+<!--<script src="{% static 'assets/js/plugins/multistep-form.js' %}"></script>-->
 <script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+<script src="{% static 'assets/js/plugins/quill.min.js' %}"></script>
 
 <script src="{% static 'assets/js/plugins/textToJson.js' %}"></script>
 
 <script src="{% static 'assets/js/plugins/chartjs.min.js' %}"></script>
   <script src="{% static 'assets/js/plugins/swiper-bundle.min.js' %}" type="text/javascript"></script>
+  <script>
+    function closeLoader(){
+      $("#loaderShow").text("");
+    }
+    function openLoader(){
+      $("#loaderShow").append(
+        '<div class="spinner-grow bg-danger" style="width: 4rem; height: 4rem; z-index: 2000;" role="status">'+
+          '<span class="visually-hidden">Loading...</span>'+
+        '</div>'
+      );
+    }
+  </script>
   <script>
     if (document.getElementsByClassName('mySwiper')) {
       var swiper = new Swiper(".mySwiper", {
@@ -44,10 +57,208 @@
             $(".swal2-confirm.btn.btn-success.mx-2").click(function(){
                 setTimeout(function(){
                     window.location.href = urlAction;
-                },500);
+                },200);
             });
             $(".swal2-cancel.btn.btn-danger").text("");
             $(".swal2-cancel.btn.btn-danger").append("No");
         }, 10);
     }
+</script>
+<script>
+  function showToastSuccess(title, description, _date=""){
+    $("#successToastTitle").text("");
+    $("#successToastTitle").append(title);
+    $("#successToastDate").text("");
+    $("#successToastDate").append(_date);
+    $("#successToastDescription").text("");
+    $("#successToastDescription").append(description);
+    $("#successToastButton").trigger("click");
+  }
+  function showToastInfo(title, description, _date=""){
+    $("#infoToastTitle").text("");
+    $("#infoToastTitle").append(title);
+    $("#infoToastDate").text("");
+    $("#infoToastDate").append(_date);
+    $("#infoToastDescription").text("");
+    $("#infoToastDescription").append(description);
+    $("#infoToast").trigger("click");
+  }
+  function showToastDanger(title, description, _date=""){
+    $("#dangerToastTitle").text("");
+    $("#dangerToastTitle").append(title);
+    $("#dangerToastDate").text("");
+    $("#dangerToastDate").append(_date);
+    $("#dangerToastDescription").text("");
+    $("#dangerToastDescription").append(description);
+    $("#dangerToastButton").trigger("click");
+  }
+  function showToastWarning(title, description, _date=""){
+    $("#warningToastTitle").text("");
+    $("#warningToastTitle").append(title);
+    $("#warningToastDate").text("");
+    $("#warningToastDate").append(_date);
+    $("#warningToastDescription").text("");
+    $("#warningToastDescription").append(description);
+    $("#warningToastButton").trigger("click");
+  }
+
+  function formatPrice(price, text=false) {
+    price = price.toString();
+    // Eliminar comas del precio
+    let cleanPrice = clearPrice(price);
+    // Convertir a número
+    let number = parseFloat(cleanPrice);
+    if (isNaN(number)) {
+      return "$";
+    }
+    // Formatear el número con comas y puntos
+    let partes = cleanPrice.split('.');
+    let parteEntera = partes[0];
+    let parteDecimal = partes.length > 1 ? '.' + partes[1] : '';
+    if (text){
+      // Rellenar con ceros si es necesario
+      if (parteDecimal.length < 2) {
+        parteDecimal = "."+parteDecimal.padEnd(2, '0');
+      }
+    }
+    parteDecimal = parteDecimal.slice(0, 3);
+
+    // Agregar comas a la parte entera
+    let parteEnteraConComas = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    return "$" + parteEnteraConComas + parteDecimal;
+  }
+  function clearPrice(price){
+    price = price.toString();
+    return price.replace(/[$,]/g, '');
+  }
+
+if ('{{date_current}}'){
+  pred = {
+    "today": {"date_from": {"years": 0, "months": 0, "days": 0}, "date_to": {"years": 0, "months": 0, "days": 0}},
+    "yesterday": {"date_from": {"years": 0, "months": 0, "days": 1}, "date_to": {"years": 0, "months": 0, "days": 1}},
+    "this_week": {"date_from": {"years": 0, "months": 0, "days": 0}, "date_to": {"years": 0, "months": 0, "days": 0}},
+    "last_week": {"date_from": {"years": 0, "months": 0, "days": 7}, "date_to": {"years": 0, "months": 0, "days": 0}},
+    "last_month": {"date_from": {"years": 0, "months": 1, "days": 0}, "date_to": {"years": 0, "months": 1, "days": 0}},
+  }
+  const currentDate = new Date('{{date_current}}');
+  const getDaysWeek = (days) => {
+      let currentDateAux = new Date('{{date_current}}');
+      let firstDay = new Date(currentDateAux.setDate(currentDateAux.getDate() - currentDateAux.getDay() + 1)); // Primer día de la semana (lunes)
+      // let year = firstDay.getFullYear() - 0;
+      // let month = String((firstDay.getMonth() + 1) - 0).padStart(2, '0');
+      // let day = String((firstDay.getDate() + 1)  - 0).padStart(2, '0');
+      // return `${year}-${month}-${day}`;
+      let daysWeek = [];
+      for (let i = 0; i < 7; i++) {
+          let _day = new Date(firstDay);
+          _day.setDate(firstDay.getDate() + i);
+          let year = _day.getFullYear();
+          let month = String(_day.getMonth() + 1).padStart(2, '0');
+          let day = String(_day.getDate() - days).padStart(2, '0');
+          daysWeek.push(`${year}-${month}-${day}`);
+      }
+      return daysWeek;
+  };
+
+  const generateDate = (option) => {
+      let year = currentDate.getFullYear() - option["years"];
+      let month = String((currentDate.getMonth() + 1) - option["months"]).padStart(2, '0');
+      let day = String((currentDate.getDate() + 1)  - option["days"]).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+  }
+  const lastDaysMonth = () => {
+      let year = currentDate.getFullYear();
+      let month = currentDate.getMonth(); // El siguiente mes
+
+      // Crear una fecha para el primer día del siguiente mes y restar un día
+      let firstDayMonth = new Date(year, month, 1);
+      let lastDayMonth = new Date(firstDayMonth - 1);
+
+      let lastDay = String(lastDayMonth.getDate()).padStart(2, '0');
+      let lastMonth = String(lastDayMonth.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
+      let lastAnio = lastDayMonth.getFullYear();
+
+      return `${lastAnio}-${lastMonth}-${lastDay}`;
+  };
+
+  const obtenerTrimestre = (fecha) => {
+      const mes = fecha.getMonth() + 1; // Obtener el mes (0-11) y sumar 1 para obtener el rango (1-12)
+      const trimestre = Math.ceil(mes / 3); // Calcular el trimestre
+      return trimestre;
+  };
+
+  const obtenerFechasTrimestre = (año, trimestre) => {
+      const primerMes = (trimestre - 1) * 3; // Calcular el primer mes del trimestre
+      const primerDia = new Date(año, primerMes, 1);
+      const ultimoDia = new Date(año, primerMes + 3, 0); // 0 es el último día del mes anterior (fin del trimestre)
+      return {
+          inicio: `${primerDia.getFullYear()}-${String(primerDia.getMonth() + 1).padStart(2, '0')}-${String(primerDia.getDate()).padStart(2, '0')}`,
+          fin: `${ultimoDia.getFullYear()}-${String(ultimoDia.getMonth() + 1).padStart(2, '0')}-${String(ultimoDia.getDate()).padStart(2, '0')}`
+      };
+  };
+
+  const obtenerTrimestres = () => {
+      const añoActual = currentDate.getFullYear();
+      const trimestreActual = obtenerTrimestre(currentDate);
+
+      const trimestreAnterior = trimestreActual === 1 ? 4 : trimestreActual - 1;
+      const añoAnterior = trimestreActual === 1 ? añoActual - 1 : añoActual;
+
+      const fechasTrimestreActual = obtenerFechasTrimestre(añoActual, trimestreActual);
+      const fechasTrimestreAnterior = obtenerFechasTrimestre(añoAnterior, trimestreAnterior);
+
+      return {
+          trimestreActual: fechasTrimestreActual,
+          trimestreAnterior: fechasTrimestreAnterior
+      };
+  };
+
+  $("#pred").change(function(){
+      if ($(this).val() == "today" || $(this).val() == "yesterday"){
+          date_from = generateDate(pred[$(this).val()].date_from);
+          date_to = generateDate(pred[$(this).val()].date_to);
+
+      }else if ($(this).val() == "this_week"){
+          daysWeek = getDaysWeek(pred[$(this).val()].date_from["days"]);
+          date_from = daysWeek[0];
+          date_to = generateDate(pred[$(this).val()].date_to);
+
+      }else if ($(this).val() == "last_week"){
+          daysWeek = getDaysWeek(pred[$(this).val()].date_from["days"]);
+          date_from = daysWeek[0];
+          date_to = daysWeek[6];
+
+      }else if ($(this).val() == "this_month"){
+          date_from = '{{date_current}}'.slice(0, 8)+"01";
+          date_to = '{{date_current}}';
+
+      }else if ($(this).val() == "last_month"){
+          date_from = generateDate(pred[$(this).val()].date_from).slice(0, 8)+"01";
+          date_to = lastDaysMonth();
+
+      }else if ($(this).val() == "This_trimester"){
+          trimestres = obtenerTrimestres();
+          date_from = trimestres["trimestreActual"]["inicio"];
+          date_to = '{{date_current}}';
+          
+      }else if ($(this).val() == "previous_trimester"){
+          trimestres = obtenerTrimestres();
+          date_from = trimestres["trimestreAnterior"]["inicio"];
+          date_to = trimestres["trimestreAnterior"]["fin"];
+          
+      }else if ($(this).val() == "this_year"){
+          trimestres = obtenerTrimestres();
+          date_from = '{{date_current}}'.slice(0, 5)+"01-01";
+          date_to = '{{date_current}}';
+
+      }else if ($(this).val() == "previous_year"){
+          trimestres = obtenerTrimestres();
+          date_from = (currentDate.getFullYear() - 1)+"-01-01";
+          date_to = (currentDate.getFullYear() - 1)+"-12-31";
+      }
+      document.getElementById("date_from").value = date_from;
+      document.getElementById("date_to").value = date_to;
+  });
+  }
 </script>

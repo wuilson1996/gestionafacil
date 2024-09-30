@@ -1,0 +1,530 @@
+<div class="modal fade" id="modal-product" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10 modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel">Buscar producto</h5>
+                <i class="fas fa-upload ms-3"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="row">
+                        {% if request.path != "/credit-note-view" %}
+                        <div class="col-md-3">
+                            <button class="btn btn-sm btn-success w-100" onclick="changeButtonModalProduct()" data-bs-toggle="modal" data-bs-target="#product">Crear Producto</button>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-6">
+                            <input type="text" id="search" placeholder="Buscar..." class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control form-control-sm" name="item_type" id="item_type">
+                                <option value="Producto o Servicio">Producto o Servicio</option>
+                                {% if request.path == '/invoice-provider-view' %}
+                                <option value="Gasto">Gasto</option>
+                                <option value="Activo">Activo</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card px-1 py-1 max-height-vh-50 mt-3">
+                    <div class="card-body overflow-auto overflow-x-hidden" id="productListView">
+                        <div class="table-responsive">
+                            <table class="table mb-0 align-items-center table-sm">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Codigo Sat</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Codigo</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7 ps-2">P. Base</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7 ps-2">Impuesto</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">P. Total</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Almacen</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Cantidad</th>
+                                    <th class="text-uppercase text-secondary border-top-0 text-xxs font-weight-bolder opacity-7">Tipo</th>
+                                </tr>
+                                </thead>
+                                <tbody id="productViewAddTable">
+                                {% for p in product %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="my-auto form-check">
+                                                <input class="form-check-input" type="checkbox" value="{{p.pk}}" id="customCheckProductList">
+                                            </div>
+                                            <h6 class="mb-0 text-sm">{{p.code}}</h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 text-sm text-secondary">{{p.code_in}}</p>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 text-sm text-secondary">{{p.name}}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-dot me-4">
+                                            <span class="text-xs text-dark">{{p.cost_money}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="text-sm align-middle">
+                                        <p class="mb-0 text-sm text-secondary">
+                                            {% for tax in tax_dict %}
+                                                {% if p.tax == tax.pk %}
+                                                    {{tax.name}} ({{tax.tax}}%)
+                                                    {{break}}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </p>
+                                    </td>
+                                    <td class="px-3 align-middle">
+                                        <span class="text-xs text-secondary font-weight-bold">{{p.price_1_money}}</span>
+                                    </td>
+                                    <td class="px-3 align-middle">
+                                        <span class="text-xs text-secondary font-weight-bold">{{p.store_name}}</span>
+                                    </td>
+                                    <td>
+                                        {% if p.quantity == 0 and p.type_product %}
+                                            <span class="badge badge-danger badge-sm">Agotado</span>
+                                        {% else %}
+                                            <span class="badge badge-success badge-sm">en Stock</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-sm text-secondary">{{p.quantity}}</span>
+                                    </td>
+                                    <td>
+                                        {% if p.type_product %}
+                                            <span class="badge badge-success badge-sm">Producto</span>
+                                        {% else %}
+                                            <span class="badge badge-warning badge-sm">Servicio</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" id="searchProductInDom" data-bs-dismiss="modal">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'app/inventory/modal-product.html' %}
+
+<script>
+    // productos
+    var product = textToJson('{{product_text}}');
+    var totalValue = 0;
+    // impuestos
+    //const taxs = textToJson('{{tax}}');
+    // productos filtrados.
+    var productFilter = [];
+    var productFilterAdd = [];
+    // Productos agregados a la factura.
+    var productItem = [];
+    var productItemAdd = [];
+    var letters = "abcdefghijklmnñopqrstuwxyzABCDEFGHIJKLMNÑOPQRSTUVWXYZ1234567890áéíóú*-+/!¡'?¿#$%&()=|° "
+    $("#search").keyup(function(event){
+      if (letters.includes(event.key) || event.key == "Backspace"){
+        filterProduct($(this).val());
+      }
+    });
+    $("#item_type").change(function(){
+        filterProduct("");
+    });
+    // filtro de productos.
+    function filterProduct(letters){
+        var letterArray = letters.split(" ");
+        //itemTypeValue = document.getElementById("item_type").value;
+        //letterArray.push(itemTypeValue);
+        productFilter = [];
+        productFilterAdd = [];
+        //console.log(letterArray);
+        letterArray.map(function (value, index){
+            if (value != ""){
+                product.map(function (valueProduct, indexProduct){
+                    //console.log(valueProduct);
+                    //console.log(value, valueProduct.name);
+                    if (valueProduct.item_type.toString().toLowerCase().includes(document.getElementById("item_type").value.toString().toLowerCase())){
+                        if (
+                            valueProduct.code_in.toString().toLowerCase().includes(value.toString().toLowerCase()) || 
+                            valueProduct.code.toString().toLowerCase().includes(value.toString().toLowerCase()) || 
+                            valueProduct.name.toLowerCase().includes(value.toLowerCase()) || 
+                            valueProduct.cost.toString().toLowerCase().includes(value.toString().toLowerCase()) || 
+                            valueProduct.price_1.toString().toLowerCase().includes(value.toString().toLowerCase()) || 
+                            //valueProduct.store_name.toString().toLowerCase().includes(value.toString().toLowerCase()) || 
+                            valueProduct.quantity.toString().toLowerCase().includes(value.toString().toLowerCase())
+                        ){
+                            //console.log(valueProduct.name);
+                            if (!productFilterAdd.includes(valueProduct.pk.toString())){
+                                productFilter.push(valueProduct);
+                                productFilterAdd.push(valueProduct.pk.toString());
+                            }
+                        }
+                    }
+                });
+            }
+            if (letterArray.length == 1 && value == ""){
+                product.map(function (valueProduct, indexProduct){
+                    if (valueProduct.item_type.toString().toLowerCase().includes(document.getElementById("item_type").value.toString().toLowerCase())){
+                        productFilter.push(valueProduct);
+                        productFilterAdd.push(valueProduct.pk.toString());
+                    }
+                });
+                //productFilter = product;
+            }
+        });
+        addItemsProductFilter();
+    }
+    // inserta productos de la busqueda.
+    function addItemsProductFilter(){
+        $("#productViewAddTable").text("");
+        productFilter.map(function (value, index){
+            var productType = '<span class="badge badge-warning badge-sm">Servicio</span>';
+            if (value.type_product){
+                productType = '<span class="badge badge-success badge-sm">Producto</span>'
+            }
+            var status = '<span class="badge badge-success badge-sm">en Stock</span>';
+            if (value.type_product && value.quantity == 0){
+                status = '<span class="badge badge-danger badge-sm">Agotado</span>';
+            }
+            var taxVal = ""
+            '{% for tax in tax_dict %}'
+                if (parseInt(value.tax) == parseInt('{{tax.pk}}')){
+                    taxVal = '{{tax.name}} ({{tax.tax}}%)'
+                    '{{break}}'
+                }
+            '{% endfor %}'
+            $("#productViewAddTable").append(
+                '<tr>'+
+                    '<td>'+
+                    '<div class="d-flex">'+
+                        '<div class="my-auto form-check">'+
+                            '<input class="form-check-input" type="checkbox"  value="'+value.pk+'" id="customCheckProductList">'+
+                        '</div>'+
+                        '<h6 class="mb-0 text-sm">'+value.code+'</h6>'+
+                    '</div>'+
+                    '</td>'+
+                    '<td>'+
+                    '<p class="mb-0 text-sm text-secondary">'+value.code_in+'</p>'+
+                    '</td>'+
+                    '<td>'+
+                    '<p class="mb-0 text-sm text-secondary">'+value.name+'</p>'+
+                    '</td>'+
+                    '<td>'+
+                    '<span class="badge badge-dot me-4">'+
+                        '<span class="text-xs text-dark">'+formatPrice(value.cost, true)+'</span>'+
+                    '</span>'+
+                    '</td>'+
+                    '<td class="text-sm align-middle">'+
+                    '<p class="mb-0 text-sm text-secondary">'+
+                        ''+taxVal+''+
+                    '</p>'+
+                    '</td>'+
+                    '<td class="px-3 align-middle">'+
+                        '<span class="text-xs text-secondary font-weight-bold">'+formatPrice(value.price_1, true)+'</span>'+
+                    '</td>'+
+                    '<td class="px-3 align-middle">'+
+                        '<span class="text-xs text-secondary font-weight-bold">'+value.store_name+'</span>'+
+                    '</td>'+
+                    '<td>'+
+                        ''+status+''+
+                    '</td>'+
+                    '<td class="align-middle">'+
+                        '<span class="text-sm text-secondary">'+value.quantity+'</span>'+
+                    '</td>'+
+                    '<td>'+
+                        ''+productType+''+
+                    '</td>'+
+                '</tr>'
+            );
+        });
+    }
+    // busca productos seleccionados para agregarlos a la factura.
+    $("#searchProductInDom").click(function(){
+        $(".form-check-input").each(function(index,element){
+            if ($(this).attr("id") == "customCheckProductList"){
+                if ($(this).prop("checked")){
+                    //console.log($(this).attr("value"));
+                    var pk = $(this).attr("value").toString().toLowerCase()
+                    searchProductWithMap(pk);
+                }
+            }
+        });
+        addProductItem();
+    })
+    function searchProductWithMap(pk, itemId=0, cant=1, cost=0){
+        product.map(function (valueProduct, indexProduct){
+            //console.log(pk, valueProduct.pk)
+            if (pk.toString() == valueProduct.pk.toString()){
+                if (!productItemAdd.includes(valueProduct.pk.toString())){
+                    productItemAdd.push(valueProduct.pk.toString());
+                    valueProduct["itemId"] = itemId;
+                    valueProduct["cant"] = cant;
+                    if (cost == 0){
+                        cost = valueProduct.cost;
+                    }
+                    valueProduct["priceUnit"] = cost;
+                    productItem.push(valueProduct);
+                }else{
+                    console.log("Ya agrego este producto");
+                    showToastDanger(
+                        "Agregar producto",
+                        "Ya agrego este producto"
+                    );
+                }
+            }
+        });
+    }
+    // reset check buttons
+    function resetCheckButtonsProductList(){
+        $(".form-check-input").each(function(index,element){
+            if ($(this).attr("id") == "customCheckProductList"){
+                $(this).prop("checked", false);
+            }
+        });
+    }
+    const currency = function(number){
+      return new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP', minimumFractionDigits: 0}).format(number);
+    };
+    function calculaTax(tax, price){
+        var valTax = (parseFloat(price) * parseInt(tax)) / 100
+        return [parseFloat(price) + parseFloat(valTax),valTax]
+    }
+    function calculaTotals(){
+        var subTotal = 0;
+        var taxTotal = 0;
+        var total = 0;
+        var pagado = 0;
+        productItem.map(function (valueProduct, indexProduct){
+            subTotal += (parseFloat(valueProduct.priceUnit) * parseFloat(valueProduct.cant));
+            total += (parseFloat(valueProduct.total) * parseFloat(valueProduct.cant));
+            taxTotal += (parseFloat(valueProduct.taxTotal) * parseFloat(valueProduct.cant));
+        });
+
+        $("#addSubTotal").text("");
+        $("#addImpuesto").text("");
+        $("#addGranTotal").text("");
+        $("#addBalance").text("");
+        $("#addPagado").text("");
+
+        $("#addSubTotal").append(formatPrice(parseFloat(subTotal), true));
+        $("#addImpuesto").append(formatPrice(parseFloat(taxTotal), true));
+        $("#addGranTotal").append(formatPrice(parseFloat(total), true));
+        $("#addBalance").append(formatPrice(parseFloat(total), true));
+        $("#addPagado").append(formatPrice(parseFloat(pagado), true));
+
+        totalValue = total;
+    }
+    // agrega productos al DOM
+    function addProductItem(){
+        //console.log(productItem);
+        $("#addItemProduct").text("");
+        productItem.map(function (valueProduct, indexProduct){
+            var taxText = ""
+            var taxVal = 0;
+            '{% for tax in tax_dict %}'
+                if (parseInt(valueProduct.tax) == parseInt('{{tax.pk}}')){
+                    taxText = '{{tax.name}} ({{tax.tax}}%)'
+                    taxVal = parseInt('{{tax.tax}}');
+                    '{{break}}'
+                }
+            '{% endfor %}'
+            productTotal = calculaTax(taxVal, valueProduct.priceUnit);
+            productItem[indexProduct]["total"] = productTotal[0];
+            productItem[indexProduct]["taxTotal"] = productTotal[1];
+            //console.log(valueProduct)
+            $("#addItemProduct").append(
+                '<tr class="tr" id="'+valueProduct.pk+'">'+
+                    '<td>'+
+                        '<div class="d-flex px-0 py-0">'+
+                            '<div class="align-middle text-start text-sm">'+
+                                '<h6 class="text-xs font-weight-bold text-wrap">'+valueProduct.code+'</h6>'+
+                            '</div>'+
+                        '</div>'+
+                    '</td>'+
+                    '<td>'+
+                        '<div class="d-flex px-0 py-0">'+
+                            '<div class="align-middle text-start text-sm">'+
+                                '<h6 class="text-xs font-weight-bold text-wrap">'+valueProduct.name+'</h6>'+
+                            '</div>'+
+                        '</div>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="number" {% if invoice.state != "No timbrada" and invoice %}disabled{% endif %} class="form-control form-control-sm" min="1" value="'+valueProduct.cant+'" name="cantProduct'+valueProduct.pk+'" id="cantProduct'+valueProduct.pk+'">'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" {% if invoice.state != "No timbrada" and invoice %}disabled{% endif %} class="form-control form-control-sm" value="'+formatPrice(valueProduct.priceUnit)+'" name="priceUnitProduct'+valueProduct.pk+'" id="priceUnitProduct'+valueProduct.pk+'">'+
+                    '</td>'+
+                    '<td class="align-middle text-center text-sm">'+
+                        '<span class="text-xs font-weight-bold"> '+taxText+' </span>'+
+                    '</td>'+
+                    '<td class="align-middle text-center text-sm">'+
+                        '<span class="text-xs font-weight-bold" id="TotalProduct'+valueProduct.pk+'"> '+formatPrice((productTotal[0] * valueProduct.cant), true)+' </span>'+
+                    '</td>'+
+                    '<td>'+
+                        '{% if invoice.state == "No timbrada" or not invoice %}'+
+                        '<div class="form-check my-auto ms-auto">'+
+                            '<button type="button" class="btn btn-danger btn-icon px-2 py-2" {% if invoice.state != "No timbrada" and invoice %}disabled{% endif %} onclick="removeProductItem(\''+valueProduct.pk+'\')">'+
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">'+
+                                    '<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'+
+                                '</svg>'+
+                            '</button>'+
+                        '</div>'+
+                        '{% endif %}'+
+                    '</td>'+
+                '</tr>'
+            );
+            inputListen(valueProduct.pk);
+            showToastSuccess(
+                "Agregar producto",
+                "Agrego ("+valueProduct.name+") ha la lista correctamente."
+            );
+        });
+        calculaTotals();
+    }
+    function inputListen(pk){
+        $("#cantProduct"+pk).keyup(function(){
+            if($(this).val() != ""){
+                changePriceCant(pk, $(this).val());
+            }
+        });
+        $("#cantProduct"+pk).change(function(){
+            if($(this).val() != ""){
+                changePriceCant(pk, $(this).val());
+            }
+        });
+        $("#priceUnitProduct"+pk).keyup(function(){
+            if($(this).val() != ""){
+                changePriceCant(pk, $(this).val(), true);
+                $(this).prop("value", formatPrice($(this).val()));
+            }
+        });
+        $("#priceUnitProduct"+pk).change(function(){
+            if($(this).val() != ""){
+                changePriceCant(pk, $(this).val(), true);
+                $(this).prop("value", formatPrice($(this).val()));
+            }
+        });
+    }
+    function changePriceCant(pk, value, price=false){
+        totalProduct = 0;
+        productItem.map(function (valueProduct, indexProduct){
+            if (pk.toString() == valueProduct.pk.toString()){
+                if (price){
+                    value = clearPrice(value);
+                    productItem[indexProduct].priceUnit = value;
+                    var taxVal = 0;
+                    '{% for tax in tax_dict %}'
+                        if (parseInt(productItem[indexProduct].tax) == parseInt('{{tax.pk}}')){
+                            taxVal = parseInt('{{tax.tax}}');
+                            '{{break}}'
+                        }
+                    '{% endfor %}'
+                    productTotal = calculaTax(taxVal, productItem[indexProduct].priceUnit);
+                    productItem[indexProduct].total = productTotal[0];
+                    productItem[indexProduct].taxTotal = productTotal[1];
+                }else{
+                    productItem[indexProduct].cant = value;
+                }
+                totalProduct = productItem[indexProduct].cant * productItem[indexProduct].total
+            }
+        });
+        $("#TotalProduct"+pk).text("");
+        $("#TotalProduct"+pk).append(formatPrice(totalProduct, true));
+        calculaTotals();
+    }
+    function removeProductItem(pk){
+        $("#"+pk).remove();
+        const position = productItemAdd.indexOf(pk.toString())
+        name = "";
+        if (position != -1){
+            name = productItem[position].name;
+            productItem.splice(position, 1);
+            productItemAdd.splice(position, 1);
+        }
+        showToastWarning(
+            "Agregar producto",
+            "Elimino ("+name+") de la lista correctamente."
+        );
+        calculaTotals();
+    }
+    function changeButtonModalProduct(){
+        //removeButton();
+        $("#buttons").text("");
+        $("#buttons").append(
+            '<button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Cerrar</button>'+
+            '<button type="button" class="btn btn-dark btn-sm" onclick="sendProduct()" id="buttonSave" data-bs-toggle="modal" data-bs-target="#modal-product">Guardar</button>'
+        );
+    }
+    function sendProduct(){
+        if (
+            document.getElementById("type_product").value != "" && 
+            document.getElementById("name").value != "" && 
+            document.getElementById("code_sat").value != "" && 
+            document.getElementById("code").value != "" && 
+            document.getElementById("cant").value != "" && 
+            document.getElementById("um").value != "" && 
+            document.getElementById("price_base").value != "" && 
+            document.getElementById("tax").value != "" && 
+            document.getElementById("price_total").value != ""
+        ){
+            openLoader()
+            $.ajax({
+                url: '/create-product',
+                type: 'POST',
+                data:{
+                    pk: document.getElementById("pk").value,
+                    type_product: document.getElementById("type_product").value,
+                    name: document.getElementById("name").value,
+                    code: document.getElementById("code").value,
+                    code_sat: document.getElementById("code_sat").value,
+                    cant: document.getElementById("cant").value,
+                    um: document.getElementById("um").value,
+                    description: document.getElementById("description").value,
+                    price_base: document.getElementById("price_base").value,
+                    tax: document.getElementById("tax").value,
+                    price_total: document.getElementById("price_total").value,
+                    store_list: document.getElementById("store_list").value,
+                    price_list: document.getElementById("price_list").value,
+                    price_init: document.getElementById("price_init").value
+                },
+                headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+                success: function(json) {
+                    //console.log(json);
+                    productData = JSON.parse(json);
+                    if (productData.code == 200){
+                        product = productData.products.data;
+                        // mostramos la nueva lista de productos.
+                        filterProduct("");
+                    }
+                    // mostramos alerta de creacion.
+                    showToastDanger(
+                        "Crear producto",
+                        productData.message
+                    );
+                    closeLoader();
+                },
+                error: function(error) {
+                    closeLoader();
+                    console.log("Ocurrio un error");
+                }
+            });
+        }else{
+            // mostramos alerta de validacion de formulario.
+            showToastDanger(
+                "Crear producto",
+                "Debe llenar todo el formulario."
+            );
+        }
+    }
+    changeButtonModalProduct();
+    filterProduct("");
+</script>

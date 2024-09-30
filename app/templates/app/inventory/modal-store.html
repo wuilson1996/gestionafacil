@@ -1,0 +1,64 @@
+<div class="modal fade" id="storeAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar Almacen</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-store" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="name">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="name">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="address">Ubicacion</label>
+                        <input type="text" class="form-control form-control-sm" name="address" id="address">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="description">Descripcion</label>
+                        <textarea type="text" class="form-control form-control-sm" name="description" id="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk_store" name="pk_store" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('storeAdd'));
+    function viewModalUser(pk_store, name, address, description, edit=true){
+        document.getElementById("pk_store").value = pk_store;
+        document.getElementById("name").value = name;
+        document.getElementById("address").value = address;
+        document.getElementById("description").value = description;
+    
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalCalendarClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk_store").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+    }
+    function activeAlert(pk_store){
+        showAlert(
+            "Eliminar Almacen", 
+            "!Esta seguro de eliminar este Almacen!", 
+            "{% url 'delete-store' %}?pk_store="+pk_store
+        )
+    }
+</script>

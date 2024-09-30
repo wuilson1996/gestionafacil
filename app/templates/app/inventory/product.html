@@ -73,7 +73,8 @@
                     <th class="text-xs">P. Base</th>
                     <th class="text-xs">Impuesto</th>
                     <th class="text-xs">P. Total</th>
-                    <th class="text-xs">SKU</th>
+                    <th class="text-xs">Codigo</th>
+                    <th class="text-xs">Codigo Sat</th>
                     <th class="text-xs">Quantity</th>
                     <th class="text-xs">Tipo</th>
                     <th class="text-xs">Status</th>
@@ -99,7 +100,7 @@
                         {% endif %}
                       {% endfor %}
                     </td>
-                    <td class="text-sm">{{p.cost}}</td>
+                    <td class="text-sm">{{p.cost_money}}</td>
                     <td class="text-sm">
                       {% for tax in tax_dict %}
                         {% if p.tax == tax.pk %}
@@ -108,7 +109,8 @@
                         {% endif %}
                       {% endfor %}
                     </td>
-                    <td class="text-sm">{{p.price_1}}</td>
+                    <td class="text-sm">{{p.price_1_money}}</td>
+                    <td class="text-sm">{{p.code_in}}</td>
                     <td class="text-sm">{{p.code}}</td>
                     <td class="text-sm">{{p.quantity}}</td>
                     <td>
@@ -127,6 +129,8 @@
                     </td>
                     <td class="text-sm">
                       <a href="javascript:;" onclick="showModal(
+                        '{{p.pk}}',
+                        '{{p.code_in}}',
                         '{{p.code}}',
                         '{{p.name}}',
                         '{{p.quantity}}',
@@ -136,11 +140,15 @@
                         '{{p.type_product}}',
                         '{{p.unit_measure}}',
                         '{{p.tax}}',
+                        '{{p.store}}',
+                        '{{p.price_init}}',
                         false
-                      )" data-bs-toggle="modal" data-bs-target="#product" data-bs-toggle="tooltip" data-bs-original-title="Preview product">
+                      )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Producto">
                         <i class="fas fa-eye text-dark"></i>
                       </a>
                       <a onclick="showModal(
+                        '{{p.pk}}',
+                        '{{p.code_in}}',
                         '{{p.code}}',
                         '{{p.name}}',
                         '{{p.quantity}}',
@@ -150,10 +158,12 @@
                         '{{p.type_product}}',
                         '{{p.unit_measure}}',
                         '{{p.tax}}',
-                      )" data-bs-toggle="modal" data-bs-target="#product" class="mx-3" data-bs-toggle="tooltip" data-bs-original-title="Edit product">
+                        '{{p.store}}',
+                        '{{p.price_init}}',
+                      )" class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Producto">
                         <i class="fas fa-user-edit text-dark"></i>
                       </a>
-                      <a href="javascript:;" onclick="activeAlert('{{p.code}}')" data-bs-toggle="tooltip" data-bs-original-title="Delete product">
+                      <a href="javascript:;" onclick="activeAlert('{{p.pk}}')" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Producto">
                         <i class="fas fa-trash text-dark"></i>
                       </a>
                     </td>
@@ -163,11 +173,15 @@
                 <tfoot>
                   <tr>
                     <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>SKU</th>
+                    <th>U. Medida</th>
+                    <th>P. Base</th>
+                    <th>Impuesto</th>
+                    <th>P. Total</th>
+                    <th>Codigo</th>
+                    <th>Codigo Sat</th>
                     <th>Quantity</th>
-                    <th class="text-xs">Tipo</th>
+                    <th>Almacen</th>
+                    <th>Tipo</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -179,7 +193,7 @@
       </div>
     </div>
     {% include 'app/inventory/modal-product.html' %}
-    {% include 'includes/scripts.html' %}
+    
     <script>
         if (document.getElementById('products-list')) {
           const dataTableSearch = new simpleDatatables.DataTable("#products-list", {
@@ -205,11 +219,11 @@
             });
           });
         };
-        function activeAlert(code){
+        function activeAlert(pk){
           showAlert(
             "Eliminar producto", 
             "!Esta seguro de eliminar este producto!", 
-            "{% url 'delete-product' %}?code="+code
+            "{% url 'delete-product' %}?pk="+pk
           )
         }
       </script>

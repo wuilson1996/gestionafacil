@@ -1,0 +1,214 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-8">
+            <div class="col-12 col-sm-6">
+                <h5 class="card-title"><i class="fas fa-user ms-3"></i> Notificaciones</h5>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        {% for n in notification_email %}
+                        <div class="p-0 card-body">
+                            <h6>{{n.name}}</h6>
+                            <input type="hidden" name="n{{n.pk}}" id="n{{n.pk}}" value="">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div class="my-auto form-check">
+                                            <span class="text-sm font-weight-semibold text-dark">{{n.check}}</span>
+                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" {% if n.active %}checked{% endif %} onclick="changeState('{{n.pk}}')">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="form-group col-sm-4">
+                                            <label for="days">Dias</label>
+                                            <input type="number" id="days{{n.pk}}" name="days{{n.pk}}" min="0" value="{{n.days}}" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-success" onclick="viewEditor('{{n.pk}}', '{{n.asunto}}', '{{n.description}}')">Editar</button>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="text-xs text-bold">De: {{company.fields.name}}</p>
+                                    <p class="text-xs text-bold">Para: nombre@micliente.com</p>
+                                    <p class="text-xs text-bold">Asunto: {{n.asunto}}</p>
+                                    <hr>
+                                    <div class="card px-1 py-1 max-height-vh-30">
+                                        <div class="card-body overflow-auto overflow-x-hidden">
+                                            <div id="editor{{n.pk}}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer mt-4">
+                <button class="btn btn-sm btn-success">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notification-email-Add" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10 modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Modificar notificacion</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- <form action="/create-notification-email" method="post" id="frm"> -->{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="title">Asunto</label>
+                        <input type="text" class="form-control form-control-sm" name="title" id="title">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="textVar">Texto variable</label>
+                        <select class="form-control" name="textVar" id="textVar">
+                            <option value="date">Fecha</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <div id="editorContainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk" name="pk" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        <!-- </form> -->
+      </div>
+    </div>
+  </div>
+{% include 'includes/scripts.html' %}
+
+<script>
+    modalTermClick = new bootstrap.Modal(document.getElementById('notification-email-Add'));
+    function activeAlert(pk_tax){
+        showAlert(
+            "Eliminar Retencion", 
+            "!Esta seguro de eliminar esta retencion!", 
+            "{% url 'delete-retention' %}?pk_tax="+pk_tax
+        )
+    }
+    function viewEditor(pk, title, description, active=true){
+        modalTermClick.show();
+        document.getElementById("pk").value = pk;
+        document.getElementById("title").value = title;
+        $("#editorContainer").text("");
+        $("#editorContainer").append('<div id="editor"></div>');
+
+        var str = description;
+        var div = document.createElement("div");
+        div.innerHTML = str.trim();
+        //console.log(str);
+        //console.log(div)
+        if(str){
+            //console.log(div.firstChild);
+            $("#editor").text("");
+            $("#editor").append(div.firstChild);
+        }
+        if (document.getElementById('editor')) {
+            var quill = new Quill('#editor', {
+                theme: 'snow' // Specify theme in configuration
+            });
+        };
+        if (!active){
+            document.getElementById("btnSave").classList.add('d-none');
+        }else{
+            document.getElementById("btnSave").classList.remove('d-none');
+        }
+    }
+    $("#buttonSave").click(function(){
+        const pk = document.getElementById("pk").value;
+        const description = document.getElementById("editor").innerHTML;
+        const title = document.getElementById("title").value;
+        //console.log(description);
+        if (title != ""){
+            $.ajax({
+                url: '/create-notification-email',
+                type: 'POST',
+                data:{
+                    pk:pk,
+                    title: title,
+                    description: description
+                },
+                headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+                success: function(json) {
+                    response = JSON.parse(json);
+                    if (response.code == 200){
+                        window.location.href = 'notification-email';
+                    }
+                },
+                error: function(error) {
+                    console.log("Ocurrio un error");
+                }
+            });
+        }
+    });
+    function changeState(pk){
+        days = document.getElementById("days"+pk).value;
+        $.ajax({
+            url: '/change-notification-email',
+            type: 'POST',
+            data:{
+                pk:pk,
+                days: days
+            },
+            headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+            success: function(json) {
+                response = JSON.parse(json);
+                if (response.code == 200){
+                    window.location.href = 'notification-email';
+                }
+            },
+            error: function(error) {
+                console.log("Ocurrio un error");
+            }
+        });
+    }
+    function showEditor(description, pk){
+        var div = document.createElement("div");
+        div.innerHTML = description.trim();
+        if(description){
+            auxText = div.firstChild.nodeValue;
+            auxText = auxText.slice(65, auxText.toString().length-348);
+            console.log(auxText);
+            $("#editor"+pk).text("");
+            $("#editor"+pk).append(auxText);
+        }
+    }
+    
+    '{% for n in notification_email %}'
+        showEditor(
+            '{{n.description}}',
+            '{{n.pk}}'
+        );
+    '{% endfor %}'
+</script>
+
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

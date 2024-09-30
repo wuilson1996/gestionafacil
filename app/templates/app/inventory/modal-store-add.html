@@ -1,0 +1,68 @@
+<div class="modal fade" id="storeAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar Almacen</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-store" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-12">
+                        <label>Almacen</label>
+                        <select class="form-control form-control-sm" id="store_add" type="text" name="store_add" required placeholder="" >
+                            {% for s in store %}
+                            <option value="{{s.pk}}">{{s.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-4 col-sm-4">
+                        <label for="address">Cantidad inicial</label>
+                        <input type="number" min="0" value="0" class="form-control form-control-sm" name="cant_init_store" id="cant_init_store">
+                    </div>
+                    <div class="form-group col-4 col-sm-4">
+                        <label for="description">Cantidad minima</label>
+                        <input type="number" min="0" value="0" class="form-control form-control-sm" name="cant_min_store" id="cant_min_store">
+                    </div>
+                    <div class="form-group col-4 col-sm-4">
+                        <label for="description">Cantidad maxima</label>
+                        <input type="number" min="0" value="0" class="form-control form-control-sm" name="cant_max_store" id="cant_max_store">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk_store" name="pk_store" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('storeAdd'));
+    function viewModalUser(pk_store, store_add, cant_init_store, cant_min_store, cant_max_store){
+        document.getElementById("pk_store").value = pk_store;
+        document.getElementById("store_add").value = store_add;
+        document.getElementById("cant_init_store").value = cant_init_store;
+        document.getElementById("cant_min_store").value = cant_min_store;
+        document.getElementById("cant_max_store").value = cant_max_store;
+    
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalCalendarClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk_store").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+    }
+</script>

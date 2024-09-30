@@ -1,0 +1,211 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Historial de correos con documentos</h5>
+                        </div>
+                        <!-- <div class="col-12, col-sm-6 text-end">
+                            <button class="btn btn-sm btn-success" onclick="clearModalUser()" data-bs-toggle="modal" data-bs-target="#retencionAdd">Crear retencion</button>
+                        </div> -->
+                    </div>
+                    <div>
+                        <div class="p-3 card-header">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 text-lg font-weight-semibold"></h5>
+                                <p class="text-sm font-weight-normal"></p>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                <div class="ms-2 dropdown">
+                                <button class="mb-0 btn btn-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Activos</button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownChart" style="">
+                                    <li><a class="dropdown-item" href="javascript:;">Activos</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Desactivados</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Todos</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="p-0 card-body">
+                            <div class="card px-1 py-1 max-height-vh-50">
+                                <div class="card-body overflow-auto overflow-x-hidden">
+                                    <div class="table">
+                                        <table class="table table-responsive table-flush">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Nombre</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Retencion (%)</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Tipo</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Descripcion</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for t in taxs %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="my-auto form-check">
+                                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                            <span class="text-sm font-weight-semibold text-dark">{{t.name}}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{t.tax}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{t.type}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{t.description}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        <a href="javascript:;" onclick="viewModalUser(
+                                                            '{{t.pk}}',
+                                                            '{{t.name}}',
+                                                            '{{t.tax}}',
+                                                            '{{t.acreditable}}',
+                                                            '{{t.description}}',
+                                                            '{{t.type}}',
+                                                            false
+                                                            )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Impuesto">
+                                                          <i class="fas fa-eye text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{t.pk}}',
+                                                            '{{t.name}}',
+                                                            '{{t.tax}}',
+                                                            '{{t.acreditable}}',
+                                                            '{{t.description}}',
+                                                            '{{t.type}}',
+                                                        )"
+                                                        class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Impuesto">
+                                                          <i class="fas fa-user-edit text-dark"></i>
+                                                        </a>
+                                                        <a onclick="activeAlert('{{t.pk}}')" href="javascript:;"  data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Impuesto">
+                                                          <i class="fas fa-trash text-dark"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="retencionAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar Retencion</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-retention" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="taxType">Tipo</label>
+                        <select class="form-control" name="taxType" id="taxType">
+                            <option value="Retencion de ISR">Retencion de ISR</option>
+                            <option value="Retencion de IVA">Retencion de IVA</option>
+                            <option value="Retencion de IVA por fletes">Retencion de IVA por fletes</option>
+                            <option value="Otro tipo de retencion">Otro tipo de retencion</option>
+                            <option value="Retencion local">Retencion local</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="name">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="name">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="tax">Porcentaje (%)</label>
+                        <input type="text" class="form-control form-control-sm" value="0" name="tax" id="tax">
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <div class="my-auto form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="acreditable" name="acreditable" checked>
+                            <span class="text-sm font-weight-semibold text-dark">Impuesto acreditable</span>
+                        </div>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="observation">Observacion</label>
+                        <textarea class="form-control" name="observation" id="observation" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk_tax" name="pk_tax" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% include 'includes/scripts.html' %}
+
+<script>
+    modalTermClick = new bootstrap.Modal(document.getElementById('retencionAdd'));
+    function viewModalUser(pk_tax, name, tax, acreditable, observation, _type, edit=true){
+        document.getElementById("pk_tax").value = pk_tax;
+        document.getElementById("name").value = name;
+        document.getElementById("tax").value = tax;
+        document.getElementById("observation").value = observation;
+        document.getElementById("taxType").value = _type;
+        if (acreditable == "True"){
+            $("#acreditable").prop("checked", true);
+        }else{
+            $("#acreditable").prop("checked", false);
+        }
+    
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalTermClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk_tax").value = "0";
+        document.getElementById("tax").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+    }
+    function activeAlert(pk_tax){
+        showAlert(
+            "Eliminar Retencion", 
+            "!Esta seguro de eliminar esta retencion!", 
+            "{% url 'delete-retention' %}?pk_tax="+pk_tax
+        )
+    }
+</script>
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

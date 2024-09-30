@@ -1,0 +1,380 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="col-xl-12 col-sm-12 mb-xl-0">
+                        <div class="card border shadow-xs mb-4">
+                          <div class="card-body text-start p-3 w-100">
+                            <div class="row">
+                              <div class="col-12">
+                                <div class="w-100">
+                                  <p class="text-sm text-secondary mb-1">Saldo en banco y efectivo</p>
+                                  <div class="d-flex align-items-center">
+                                    <span class="text-xl text-success font-weight-semibold">
+                                        $0.00
+                                    </span>
+                                  </div>
+                                  <div class="d-flex align-items-center">
+                                    <span class="text-sm">Última actualización 25-06-2024</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-sm-12 mb-xl-0">
+                        <div class="card border shadow-xs mb-4">
+                          <div class="card-body text-start p-3 w-100">
+                            <div class="row">
+                              <div class="col-12">
+                                <div class="w-100">
+                                    <p class="text-sm text-secondary mb-1">Deuda en tarjetas de crédito</p>
+                                    <div class="d-flex align-items-center">
+                                      <span class="text-xl text-success font-weight-semibold">
+                                          $0.00
+                                      </span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                      <span class="text-sm">Última actualización 25-06-2024</span>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <h6>Ingresos y egresos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-10 mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Cuentas Bancarias</h5>
+                        </div>
+                        <div class="col-12, col-sm-6 text-end">
+                            <button class="btn btn-sm btn-success" onclick="clearModalUser()" data-bs-toggle="modal" data-bs-target="#branchAdd">Crear banco</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="p-3 card-header">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-0 text-lg font-weight-semibold">Lista de cuentas bancarias</h5>
+                                <p class="text-sm font-weight-normal"></p>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                <div class="ms-2 dropdown">
+                                <button class="mb-0 btn btn-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Activos</button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownChart" style="">
+                                    <li><a class="dropdown-item" href="javascript:;">Activos</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Desactivados</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Todos</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="p-0 card-body">
+                            <div class="card px-1 py-1 max-height-vh-50">
+                                <div class="card-body overflow-auto overflow-x-hidden">
+                                    <div class="table">
+                                        <table class="table table-responsive table-flush">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Nombre</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Tipo de cuenta</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Numero de cuenta</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Estado</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Saldo</th>
+                                                    <th class="text-xs border-top-0 font-weight-semibold">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for b in bank %}
+                                                <tr>
+                                                    <td>
+                                                        {{b.name}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.type_account}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.account_number}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.state}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        {{b.balance_money}}
+                                                    </td>
+                                                    <td class="text-sm">
+                                                        <a href="javascript:;" onclick="viewModalUser(
+                                                            '{{b.pk}}',
+                                                            '{{b.name}}',
+                                                            '{{b.type_account}}',
+                                                            '{{b.account_number}}',
+                                                            '{{b.amount_init}}',
+                                                            '{{b.date_amount_init}}',
+                                                            '{{b.description}}',
+                                                            false
+                                                            )" data-bs-toggle="tooltip" data-bs-placement="left" title="Ver Cuenta bancaria">
+                                                          <i class="fas fa-eye text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" 
+                                                        onclick="viewModalUser(
+                                                            '{{b.pk}}',
+                                                            '{{b.name}}',
+                                                            '{{b.type_account}}',
+                                                            '{{b.account_number}}',
+                                                            '{{b.amount_init}}',
+                                                            '{{b.date_amount_init}}',
+                                                            '{{b.description}}'
+                                                        )"
+                                                        class="mx-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Editar Cuenta bancaria">
+                                                          <i class="fas fa-user-edit text-dark"></i>
+                                                        </a>
+                                                        <a href="javascript:;" onclick="activeAlert('{{b.pk}}')" data-bs-toggle="tooltip" data-bs-placement="left" title="Eliminar Cuenta bancaria">
+                                                          <i class="fas fa-trash text-dark"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="branchAdd" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mt-lg-10">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Agregar Sucursal</h5>
+          <i class="fas fa-upload ms-3"></i>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/create-bank" method="post" id="frm">{% csrf_token %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-6 col-sm-6">
+                        <label for="name">Nombre *</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="name" required>
+                    </div>
+                    <div class="form-group col-6 col-sm-6">
+                        <label for="type_account">Tipo de cuenta *</label>
+                        <select name="type_account" id="type_account" class="form-control form-control-sm" required>
+                            {% for ta in type_accounts %}
+                            <option value="{{ta.name}}">{{ta.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="account_number">Numero de cuenta *</label>
+                        <input type="text" class="form-control form-control-sm" name="account_number" id="account_number" required>
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="amount_init">Saldo inicial *</label>
+                        <input type="text" class="form-control form-control-sm" name="amount_init" id="amount_init" required>
+                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="date_amount_init">Fecha de saldo inicial *</label>
+                        <input type="date" class="form-control form-control-sm" name="date_amount_init" id="date_amount_init" required>
+                    </div>
+                    <div class="form-group col-12 col-sm-12">
+                        <label for="date_amount_init">Descripcion *</label>
+                        <textarea class="form-control form-control-sm" name="description" id="description" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" id="pk" name="pk" value="0">
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-dark btn-sm" id="buttonSave">Guardar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% include 'includes/scripts.html' %}
+
+<script>
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('branchAdd'));
+    function viewModalUser(pk_bank, name, type_account, account_number, amount_init, date_amount_init, description, edit=true){
+        document.getElementById("pk").value = pk_bank;
+        document.getElementById("name").value = name;
+        document.getElementById("type_account").value = type_account;
+        document.getElementById("account_number").value = account_number;
+        document.getElementById("amount_init").value = amount_init;
+        document.getElementById("date_amount_init").value = date_amount_init;
+        document.getElementById("description").value = description;
+    
+        if (edit){
+            document.getElementById("buttonSave").classList.remove('d-none');
+            document.getElementById("buttonSave").textContent = "Modificar";
+        }else{
+            document.getElementById("buttonSave").classList.add('d-none');
+        }
+        modalCalendarClick.show();
+    }
+    function clearModalUser(){
+        document.getElementById("frm").reset();
+        document.getElementById("pk").value = "0";
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Guardar";
+    }
+    function activeAlert(pk_bank){
+        showAlert(
+            "Eliminar Banco",
+            "!Esta seguro de eliminar este Banco!",
+            "{% url 'delete-bank' %}?pk="+pk_bank
+        )
+    }
+    var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+    var gradientStroke1 = ctx2.createLinearGradient(0, 230, 0, 50);
+
+    gradientStroke1.addColorStop(1, 'rgba(85, 166, 248, 0.1)');
+    gradientStroke1.addColorStop(0, 'rgba(21, 137, 255, 0.0001)');
+
+    var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
+    gradientStroke2.addColorStop(1, 'rgba(22, 93, 255, 0.2)');
+    gradientStroke2.addColorStop(0, 'rgba(22, 93, 255, 0.0001)');
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [{
+            label: "Ingresos",
+            tension: 0.4,
+            borderWidth: 0,
+            pointRadius: 2,
+            pointBackgroundColor: "#55A6F8",
+            borderColor: "#55A6F8",
+            borderWidth: 3,
+            backgroundColor: gradientStroke1,
+            fill: true,
+            data: [340, 550, 350, 750, 650, 250, 500, 150, 600, 550, 400, 950],
+            maxBarThickness: 6
+          },
+          {
+            label: "Egresos",
+            tension: 0.4,
+            borderWidth: 0,
+            pointRadius: 2,
+            pointBackgroundColor: "#774DD3",
+            borderColor: "#774DD3",
+            borderWidth: 3,
+            backgroundColor: gradientStroke2,
+            fill: true,
+            data: [100, 500, 200, 550, 250, 500, 250, 750, 400, 650, 250, 750],
+            maxBarThickness: 6
+          }
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'end',
+            labels: {
+              boxWidth: 6,
+              boxHeight: 6,
+              padding: 20,
+              pointStyle: 'circle',
+              borderRadius: 50,
+              usePointStyle: true,
+              font: {
+                weight: 600,
+              },
+            },
+            tooltip: {
+              backgroundColor: '#fff',
+              titleColor: '#1e293b',
+              bodyColor: '#1e293b',
+              borderColor: '#e9ecef',
+              borderWidth: 1,
+              pointRadius: 2,
+              usePointStyle: true,
+              boxWidth: 8,
+            }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: true,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#9ca2b7'
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: true,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#9ca2b7',
+              padding: 10
+            }
+          },
+        },
+      },
+    });
+</script>
+
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

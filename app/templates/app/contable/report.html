@@ -1,0 +1,155 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <h5 class="card-title"><i class="fas fa-user ms-3"></i> Reportes</h5>
+                        </div>
+                        <div class="col-12, col-sm-6 text-end">
+                            <input class="form-control form-control-sm" id="search" name="search" placeholder="Search...">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card-header border-0 pb-4">
+                            <p class="text-sm">Obtén una visión completa de la información contable, administrativa y fiscal de tu empresa. </p>
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                              <label class="btn btn-white px-3 mb-0" for="btnradio1">Todos</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                              <label class="btn btn-white px-3 mb-0" for="btnradio2">Favoritos</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                              <label class="btn btn-white px-3 mb-0" for="btnradio3">Recientes</label>
+                            </div>
+                        </div>
+                        <div class="p-0 card">
+                            <div class="card-body text-center">
+                                <h6>Reportes de ventas</h6>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-sales?pred=this_month'"><i class="fas fa-user ms-3"></i> Ventas generales</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-sales-by-item?pred=this_month'"><i class="fas fa-user ms-3"></i> Ventas por producto</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-sales-by-client?pred=this_month'"><i class="fas fa-user ms-3"></i> Ventas por clientes</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-item-profit?pred=this_month'"><i class="fas fa-user ms-3"></i> Rentabilidad de producto</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-sales-by-seller?pred=this_month'"><i class="fas fa-user ms-3"></i> Ventas por vendedor</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start" onclick="openLoader();window.location.href='report-state-account?pred=this_month'"><i class="fas fa-user ms-3"></i> Estado de cuenta cliente</button>
+                                    </div>
+                                </div>
+                                <h6>Reportes administrativos</h6>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Cuentas por cobrar</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Cuentas por pagar</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Ingresos y gastos</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Inventario valorizado</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Operaciones</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Compras</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Reporte anual</button>
+                                    </div>
+                                </div>
+                                <h6>Reportes contables</h6>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Estado de resultados</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Estado de situación financiera</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Impuestos y retenciones</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Auxiliar</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Libro diario</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Auxiliar por tercero</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Balanza de comprobación</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Balanza de comprobación por tercero</button>
+                                    </div>
+                                </div>
+                                <h6>Reportes fiscales</h6>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Reporte de impuestos RESICO</button>
+                                    </div>
+                                </div>
+                                <h6>Reportes para trabajar</h6>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Exportar facturas</button>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn bg-gradient-secondary w-100 text-start"><i class="fas fa-user ms-3"></i> Informe contador</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'includes/scripts.html' %}
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

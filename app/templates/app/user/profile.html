@@ -1,0 +1,49 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Dashboard {% endblock title %}
+{% load static %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Informacion general</h6>
+                    <div class="row">
+                        <div class="col-3 col-sm-4 text-start mt-4">
+                            <div class="border border-4 border-gray-100 avatar avatar-2xl rounded-circle position-relative">
+                                <img src="../../../static/assets/img/team-1.jpg" alt="profile_image" class="w-100">
+                            </div>
+                            
+                        </div>
+                        <div class="col-3 col-sm-4 text-start">
+                            <h6 class="text-sm">Nombre</h6>
+                            <p>{{user.data.first_name}}</p>
+                            <h6 class="text-sm">Almacen</h6>
+                            <p>{% for b in branch.data %}{% if user.data.branch == b.pk %}{{b.name}}{% endif %}{% endfor %}</p>
+                        </div>
+                        <div class="col-3 col-sm-4 text-start">
+                            <h6 class="text-sm">Email</h6>
+                            <p>{{user.data.email}}</p>
+                            <h6 class="text-sm">Permisos</h6>
+                            <p>{% for p in user.data.permission %}{{p.name_permission}} - {% endfor %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/scripts.html' %}
+{% endblock content %}
+  
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

@@ -3,6 +3,9 @@
       <form action="/create-product" method="post" id="formId">{% csrf_token %}
       <div class="modal-content">
         <div class="modal-header">
+          {% if request.path != "/product" %}
+            <button type="button" class="btn btn-dark btn-sm m-2" data-bs-toggle="modal" data-bs-target="#modal-product">Atras</button>
+          {% endif %}
           <h5 class="modal-title" id="ModalLabel">Crear Producto</h5>
           <i class="fas fa-upload ms-3"></i>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -31,9 +34,27 @@
             </div>
           </div>
           <div class="mt-3 row">
-            <div class="col-12 col-sm-3">
+            <div class="col-12 col-sm-6">
               <label>Referencia</label>
-              <input class="form-control form-control-sm" id="ref" type="text" name="ref" required placeholder="CAS001" />
+              <input class="form-control form-control-sm" id="code" type="text" name="code" placeholder="Agrege un codigo interno" />
+            </div>
+            <div class="col-12 col-sm-6">
+              <label>Codigo SAT</label>
+              <input class="form-control form-control-sm" list="ref" id="code_sat" type="text" name="code_sat" placeholder="Codigo/Nombre de producto o servicio 'Sat'" />
+              <datalist id="ref">
+
+              </datalist>
+            </div>
+
+          </div>
+          <div class="mt-3 row">
+            <div class="col-12 col-sm-3">
+              <label>Almacen</label>
+              <select class="form-control form-control-sm" id="store" type="text" name="store" required placeholder="" multiple data-bs-toggle="tooltip" data-bs-placement="top" title="Configure un almacen o valla a formulario avanzado y siga configurando">
+                {% for s in store %}
+                  <option value="{{s.pk}}">{{s.name}}</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="col-12 col-sm-4">
               <label>Cantidad</label>
@@ -58,7 +79,7 @@
           <div class="mt-3 row">
             <div class="col-12 col-sm-3">
               <label>Precio Base</label>
-              <input class="form-control form-control-sm" id="price_base" type="number" value="0" min="0" name="price_base" required placeholder="1000" />
+              <input class="form-control form-control-sm" id="price_base" type="text" value="0" min="0" name="price_base" required placeholder="1000" />
             </div>
             <div class="col-12 col-sm-5">
               <label>Impuesto</label>
@@ -68,19 +89,29 @@
             </div>
             <div class="col-12 col-sm-4">
               <label>Precio total</label>
-              <input class="form-control form-control-sm" id="price_total" type="number" name="price_total" required placeholder="10000" />
+              <input class="form-control form-control-sm" id="price_total" type="text" name="price_total" value="0" required placeholder="10000" />
             </div>
+            <div class="mr-3 row">
+              <div class="col-12 col-sm-4">
+                  <label>Costo inicial</label>
+                  <input class="form-control form-control-sm" id="price_init" type="text" name="price_init" required placeholder="10000" />
+              </div>
+          </div>
           </div>
           <div class="row mt-3">
             <div class="col-12 col-sm-4">
-                <a href="#" type="button" class="btn btn-white btn-sm">Ir a Formulario avanzado</a>
+              {% if request.path == "/product" %}
+                <a href="javascript:;" onclick="openUrl()" type="button" class="btn btn-white btn-sm">Ir a Formulario avanzado</a>
+              {% endif %}
             </div>
           </div>
-          <input type="hidden" id="code" name="code">
+          <input type="hidden" id="store_list" name="store_list" value="[]">
+          <input type="hidden" name="price_list" id="price_list" value="[]">
+          <input type="hidden" id="pk" name="pk" value="">
         </div>
         <div class="modal-footer" id="buttons">
           <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-dark btn-sm">Guardar</button>
+          <button type="submit" class="btn btn-success btn-sm" id="buttonSave">Guardar</button>
         </div>  
       </div>
       </form>
@@ -88,85 +119,261 @@
   </div>
   {% include 'includes/scripts.html' %}
   <script>
+    const products = textToJson('{{product_text}}');
+    if (document.getElementById('ref')) {
+      var selectCodeSat = $('#ref');
+      console.log(selectCodeSat);
+      //setTimeout(function() {
+      //  const example = new Choices(selectCodeSat);
+      //}, 1);
+    }
+    function clearSelectCodeSat(){
+      selectCodeSat.text("");
+    }
+    function addSelectCodeSat(value, text, optionSelected=false){
+      selectCodeSat.append("<option value='"+value+"'>"+text+"</option>");
+      //var optn = document.createElement("OPTION");
+      //optn.text = text;
+      //optn.value = value;
+      //optn.selected = optionSelected;
+      //selectCodeSat.options.add(optn);
+
+      /*if (optionSelected){
+        setTimeout(function(){
+          document.getElementById("code_sat").value = value;
+        },1);
+      }*/
+    }
+    let timeout
+    $("#code_sat").keydown(function(){
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        console.log('Has dejado de escribir en el input')
+        searchItem(document.getElementById("code_sat").value);
+        clearTimeout(timeout)
+      },1000);
+    });
+    async function searchItem(valueSearch, sl=true){
+      clearSelectCodeSat();
+      addSelectCodeSat(codeSat[0].code, codeSat[0].name, sl);
+      cont = 0;
+      for(i=0; i<codeSat.length; i++){
+        if (
+          (codeSat[i].code.toString().toLowerCase().includes(valueSearch.toString().toLowerCase()) || 
+          codeSat[i].name.toString().toLowerCase().includes(valueSearch.toString().toLowerCase())) && 
+          valueSearch != "" && valueSearch != " "
+        ){
+          //console.log(codeSat[i]);
+          cont += 1;
+          if (sl == false){
+            addSelectCodeSat(codeSat[i].code, codeSat[i].name, true);
+          }else{
+            addSelectCodeSat(codeSat[i].code, codeSat[i].name);
+          }
+          if (cont > 500){
+            break;
+          }
+        }
+      };
+    }
     const taxs = textToJson('{{tax}}');
+    let codeSat = [];//textToJson('{{code_prod_serv}}');
+
+    //console.log(codeSat[0]);
     taxs.map(function (value, index){
-        $("#tax").append(
-            '<option value="'+value.pk+'">'+value.name+' ('+value.tax+'%)</option>'
-        )
+      $("#tax").append(
+        '<option value="'+value.pk+'">'+value.name+' ('+value.tax+'%)</option>'
+      )
     });
     $("#price_base").change(function(){
-        getPrice($("#tax").val(), $(this).val());
-    })
+      //console.log($(this).val());
+      getPrice($("#tax").val(), $(this).val());
+    });
     $("#price_base").keyup(function(){
-        getPrice($("#tax").val(), $(this).val());
-    })
+      //console.log($(this).val());
+      getPrice($("#tax").val(), $(this).val());
+    });
     $("#tax").change(function(elem){
-        var elem = $(this).val();
-        getPrice(elem, $("#price_base").val());
+      //console.log($(this).val());
+      var elem = $(this).val();
+      getPrice(elem, $("#price_base").val());
+    });
+    $("#price_init").keyup(function(){
+      document.getElementById("price_init").value = formatPrice($(this).val());
+    })
+    $("#price_init").change(function(elem){
+      document.getElementById("price_init").value = formatPrice($(this).val());
     });
     function getPrice(elem, price){
-        taxs.map(function (value, index){
-            if (elem == parseInt(value.pk)){
-                calculaTax(value.tax, price)
-            }
+      //console.log(taxs);
+      taxValue = null;
+      taxs.map(function (value, index){
+        if (parseInt(elem) == parseInt(value.pk)){
+          taxValue = value;
+        }
+      });
+      if (taxValue != null && price != ""){
+        calculaTaxSet(parseInt(taxValue.tax), price)
+      }
+    }
+    function calculaTaxSet(tax, price){
+      var valTax = (parseFloat(clearPrice(price)) * parseInt(tax)) / 100
+      document.getElementById("price_total").value = formatPrice((parseFloat(clearPrice(price)) + parseFloat(valTax)).toString());
+      document.getElementById("price_base").value = formatPrice(price);
+    }
+    modalCalendarClick = new bootstrap.Modal(document.getElementById('product'));
+    function showModal(pkProduct, codeIn, itemId, name, cant, price, cost, description, type_product, um, tax, pk_store, priceInit, save = true){
+      document.getElementById("pk").value = pkProduct;
+      document.getElementById("name").value = name;
+      document.getElementById("cant").value = cant;
+      document.getElementById("code").value = codeIn;
+      document.getElementById("code_sat").value = itemId;
+      document.getElementById("price_total").value = formatPrice(price);
+      document.getElementById("price_base").value = formatPrice(cost);
+      document.getElementById("description").value = description;
+      document.getElementById("um").value = um;
+      document.getElementById("tax").value = tax;
+      pk_store = JSON.parse(pk_store);
+      selectStore = document.getElementById("store");
+      for (i=0; i<selectStore.options.length; i++){
+        selectStore.options[i].selected = false;
+        if (pk_store.includes(parseInt(selectStore.options[i].value))){
+          selectStore.options[i].selected = true;
+        }
+      }
+      //document.getElementById("store").value = pk_store;
+      document.getElementById("price_init").value = formatPrice(priceInit);
+      if (type_product == "True"){
+        $("#customRadio1").prop("checked", true);
+        document.getElementById("type_product").value = true;
+      }else{
+        $("#customRadio2").prop("checked", true);
+        document.getElementById("type_product").value = false;
+      }
+      changeElements(save);
+      if (save){
+        document.getElementById("buttonSave").classList.remove('d-none');
+        document.getElementById("buttonSave").textContent = "Modificar";
+      }else{
+        document.getElementById("buttonSave").classList.add('d-none');
+      }
+      modalCalendarClick.show();
+      searchItem(itemId, false);
+      addPriceByObject(pkProduct);
+      addStoreByObject(pkProduct);
+    }
+    function changeElements(save){
+      $("#name").prop("disabled", !save);
+      $("#cant").prop("disabled", !save);
+      $("#code").prop("disabled", !save);
+      $("#code_sat").prop("disabled", !save);
+      $("#price_total").prop("disabled", !save);
+      $("#price_base").prop("disabled", !save);
+      $("#description").prop("disabled", !save);
+      $("#um").prop("disabled", !save);
+      $("#tax").prop("disabled", !save);
+      $("#store").prop("disabled", !save);
+      $("#price_init").prop("disabled", !save);
+    }
+    $("#store").change(function(){
+      console.log($(this).val());
+      addStoreByObject($(this).val(), true);
+    });
+    var contStore = 0;
+    var storeObject = {};
+    function addStoreByObject(pkProduct=null, change=false){
+      if (change == true){
+        storeObject = {};
+        pkProduct.map(function(value, index){
+          storeObject[contStore] = {
+            "pk":0,
+            "store":value,
+            "cant_init":0,
+            "cant_min":0,
+            "cant_max":0
+          }
+          contStore += 1;
         });
-    }
-    function calculaTax(tax, price){
-        var valTax = (parseFloat(price) * parseInt(tax)) / 100
-        document.getElementById("price_total").value = parseFloat(price) + parseFloat(valTax)
-    }
-    function showModal(itemId, name, cant, price, cost, description, type_product, um, tax, save = true){
-        document.getElementById("code").value = itemId;
-        document.getElementById("name").value = name;
-        document.getElementById("cant").value = cant;
-        document.getElementById("ref").value = itemId;
-        document.getElementById("price_total").value = price;
-        document.getElementById("price_base").value = cost;
-        document.getElementById("description").value = description;
-        document.getElementById("um").value = um;
-        document.getElementById("tax").value = tax;
-        
-        document.getElementById("type_product").value = type_product;
-        if (type_product == "True"){
-            $("#customRadio1").prop("checked", true);
-        }else{
-            $("#customRadio2").prop("checked", true);
+      }else{
+        storeObject = {};
+        products.map(function (value, index){
+          if (parseInt(pkProduct) == parseInt(value.pk)){
+            value.store_list.map(function (storeValue, storeIndex){
+              storeObject[contStore] = storeValue;
+              contStore += 1;
+            });
+          }
+        });
+        $("#store").prop("disabled", false);
+        if (Object.values(storeObject).length > 0){
+          $("#store").prop("disabled", true);
+          //document.getElementById("store").title = "Configure el almacen en el formulario avanzado";
         }
-        //$("#formId").attr("action", "/update-product");
-        if (!save){
-            removeButton();
-        }else{
-            removeButton();
-            addButton();
+      }
+      document.getElementById("store_list").value = JSON.stringify(Object.values(storeObject));
+    }
+    function addPriceByObject(pk){
+      var contPrice = 0;
+      var priceObject = {};
+      products.map(function (value, index){
+        if (parseInt(pk) == parseInt(value.pk)){
+          value.price_list.map(function (priceValue, priceIndex){
+            priceObject[contPrice] = {
+              "pk":priceValue.pk,
+              "price":priceValue.list_price,
+              "valor":priceValue.valor
+            }
+            contPrice += 1;
+          });
         }
+      });
+      document.getElementById("price_list").value = JSON.stringify(Object.values(priceObject));
     }
     function clearModal(){
-        document.getElementById("code").value = "";
-        document.getElementById("name").value = "";
-        document.getElementById("cant").value = "0";
-        document.getElementById("ref").value = "";
-        document.getElementById("price_total").value = "";
-        document.getElementById("price_base").value = "0";
-        document.getElementById("description").value = "";
-        document.getElementById("um").value = "1";
-        document.getElementById("tax").value = "1";
-        //$("#formId").attr("action", "/create-product");
-        removeButton();
-        addButton();
-    }
-    function addButton(){
-        $("#buttons").append(
-        '<button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal">Cerrar</button>'+
-        '<button type="submit" class="btn btn-dark btn-sm">Guardar</button>'
-        )
-    }
-    function removeButton(){
-        $("#buttons").text("");
+      document.getElementById("formId").reset();
+      document.getElementById("buttonSave").classList.remove('d-none');
+      document.getElementById("buttonSave").textContent = "Guardar";
+      document.getElementById("pk").value = "0";
+      document.getElementById("price_total").value = formatPrice("0");
+      document.getElementById("price_base").value = formatPrice("0");
+      document.getElementById("price_init").value = formatPrice("0");
+      changeElements(true);
     }
     $("#customRadio1").change(function(){
-        document.getElementById("type_product").value = true
+      document.getElementById("type_product").value = true
     })
     $("#customRadio2").change(function(){
-        document.getElementById("type_product").value = false
+      document.getElementById("type_product").value = false
     })
+    function openUrl(){
+      openLoader();
+      pk = document.getElementById("pk").value;
+      if (pk == "0"){
+        window.location.href = "{% url 'product-view' %}";
+      }else{
+        if ($("#name").prop("disabled") == false){
+          window.location.href = "{% url 'product-view' %}?pk="+pk+"&edit=true";
+        }else{
+          window.location.href = "{% url 'product-view' %}?pk="+pk+"&edit=false";
+        }
+      }
+    }
+    function getCodeProdServ(){
+      $.ajax({
+        url: '/get-code-prod-serv',
+        type: 'POST',
+        data:{},
+        headers: {"X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()},
+        success: function(json) {
+          //console.log(json);
+          codeSat = JSON.parse(json);
+          //console.log(codeSat);
+          searchItem("");
+        },
+        error: function(error) {
+          console.log("Ocurrio un error");
+        }
+      });
+    }
+    getCodeProdServ();
   </script>
